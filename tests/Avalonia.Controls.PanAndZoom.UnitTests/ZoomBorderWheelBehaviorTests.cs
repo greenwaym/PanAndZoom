@@ -364,7 +364,7 @@ public class ZoomBorderWheelBehaviorTests
             0,
             new PointerPointProperties(RawInputModifiers.Shift, PointerUpdateKind.Other),
             KeyModifiers.Shift,
-            new Vector(1, 0)
+            new Vector(0, 1)
         )
         {
             RoutedEvent = InputElement.PointerWheelChangedEvent
