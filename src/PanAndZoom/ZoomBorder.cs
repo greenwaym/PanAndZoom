@@ -997,11 +997,16 @@ public partial class ZoomBorder : Border
         if (_element == null)
             return;
 
+        // Get the layout offset where Avalonia positioned the element
+        var layoutOffset = _element.Bounds.Position;
+
         var viewportCenterX = (Bounds.Width - CenterPadding.Left - CenterPadding.Right) / 2.0 + CenterPadding.Left;
         var viewportCenterY = (Bounds.Height - CenterPadding.Top - CenterPadding.Bottom) / 2.0 + CenterPadding.Top;
 
-        var offsetX = viewportCenterX - point.X * _zoomX;
-        var offsetY = viewportCenterY - point.Y * _zoomY;
+        // The actual visual position is: layoutOffset + matrix offset + point * zoom
+        // So: matrix offset = viewportCenter - layoutOffset - point * zoom
+        var offsetX = viewportCenterX - layoutOffset.X - point.X * _zoomX;
+        var offsetY = viewportCenterY - layoutOffset.Y - point.Y * _zoomY;
 
         Pan(offsetX, offsetY, !animate);
     }
@@ -1017,12 +1022,16 @@ public partial class ZoomBorder : Border
         if (_element == null)
             return;
 
+        // Get the layout offset where Avalonia positioned the element
+        var layoutOffset = _element.Bounds.Position;
+
         var viewportCenterX = (Bounds.Width - CenterPadding.Left - CenterPadding.Right) / 2.0 + CenterPadding.Left;
         var viewportCenterY = (Bounds.Height - CenterPadding.Top - CenterPadding.Bottom) / 2.0 + CenterPadding.Top;
 
-        var matrix = MatrixHelper.ScaleAt(zoom, zoom, point.X, point.Y);
-        var offsetX = viewportCenterX - point.X * zoom;
-        var offsetY = viewportCenterY - point.Y * zoom;
+        // The actual visual position is: layoutOffset + matrix offset + point * zoom
+        // So: matrix offset = viewportCenter - layoutOffset - point * zoom
+        var offsetX = viewportCenterX - layoutOffset.X - point.X * zoom;
+        var offsetY = viewportCenterY - layoutOffset.Y - point.Y * zoom;
 
         _matrix = MatrixHelper.ScaleAndTranslate(zoom, zoom, offsetX, offsetY);
         Invalidate(!animate);
@@ -1075,7 +1084,12 @@ public partial class ZoomBorder : Border
         if (!_matrix.TryInvert(out var inverted))
             return viewportPoint;
 
-        return inverted.Transform(viewportPoint);
+        // Account for layout offset: viewport coordinates need to be adjusted
+        // before applying the inverse matrix transform
+        var layoutOffset = _element?.Bounds.Position ?? new Point(0, 0);
+        var adjustedPoint = new Point(viewportPoint.X - layoutOffset.X, viewportPoint.Y - layoutOffset.Y);
+
+        return inverted.Transform(adjustedPoint);
     }
 
     /// <summary>
@@ -1085,7 +1099,11 @@ public partial class ZoomBorder : Border
     /// <returns>The point in viewport coordinates.</returns>
     public Point ContentToViewport(Point contentPoint)
     {
-        return _matrix.Transform(contentPoint);
+        var transformed = _matrix.Transform(contentPoint);
+
+        // Account for layout offset: add it after the matrix transform
+        var layoutOffset = _element?.Bounds.Position ?? new Point(0, 0);
+        return new Point(transformed.X + layoutOffset.X, transformed.Y + layoutOffset.Y);
     }
 
     /// <summary>
@@ -1098,8 +1116,17 @@ public partial class ZoomBorder : Border
         if (!_matrix.TryInvert(out var inverted))
             return viewportRect;
 
-        var topLeft = inverted.Transform(viewportRect.TopLeft);
-        var bottomRight = inverted.Transform(viewportRect.BottomRight);
+        // Account for layout offset: viewport coordinates need to be adjusted
+        // before applying the inverse matrix transform
+        var layoutOffset = _element?.Bounds.Position ?? new Point(0, 0);
+        var adjustedRect = new Rect(
+            viewportRect.X - layoutOffset.X,
+            viewportRect.Y - layoutOffset.Y,
+            viewportRect.Width,
+            viewportRect.Height);
+
+        var topLeft = inverted.Transform(adjustedRect.TopLeft);
+        var bottomRight = inverted.Transform(adjustedRect.BottomRight);
 
         return new Rect(topLeft, bottomRight);
     }
@@ -1114,7 +1141,13 @@ public partial class ZoomBorder : Border
         var topLeft = _matrix.Transform(contentRect.TopLeft);
         var bottomRight = _matrix.Transform(contentRect.BottomRight);
 
-        return new Rect(topLeft, bottomRight);
+        // Account for layout offset: add it after the matrix transform
+        var layoutOffset = _element?.Bounds.Position ?? new Point(0, 0);
+        return new Rect(
+            topLeft.X + layoutOffset.X,
+            topLeft.Y + layoutOffset.Y,
+            bottomRight.X - topLeft.X,
+            bottomRight.Y - topLeft.Y);
     }
 
     /// <summary>
@@ -1218,6 +1251,9 @@ public partial class ZoomBorder : Border
             return;
         _updating = true;
 
+        // Get the layout offset where Avalonia positioned the element
+        var layoutOffset = _element.Bounds.Position;
+
         var pad = padding ?? new Thickness(0);
         var viewportWidth = Bounds.Width - pad.Left - pad.Right;
         var viewportHeight = Bounds.Height - pad.Top - pad.Bottom;
@@ -1246,13 +1282,10 @@ public partial class ZoomBorder : Border
         var viewportCenterX = pad.Left + viewportWidth / 2.0;
         var viewportCenterY = pad.Top + viewportHeight / 2.0;
 
-        // For a point (x,y) transformed by matrix (zoom, 0, 0, zoom, offsetX, offsetY):
-        // transformed_x = zoom * x + offsetX
-        // We want rectCenter to appear at viewportCenter:
-        // viewportCenterX = zoom * rectCenterX + offsetX
-        // Therefore: offsetX = viewportCenterX - zoom * rectCenterX
-        var offsetX = viewportCenterX - zoom * rectCenterX;
-        var offsetY = viewportCenterY - zoom * rectCenterY;
+        // The actual visual position is: layoutOffset + matrix offset + point * zoom
+        // So: matrix offset = viewportCenter - layoutOffset - point * zoom
+        var offsetX = viewportCenterX - layoutOffset.X - zoom * rectCenterX;
+        var offsetY = viewportCenterY - layoutOffset.Y - zoom * rectCenterY;
 
         _matrix = new Matrix(zoom, 0, 0, zoom, offsetX, offsetY);
         Invalidate(!animate);
@@ -1276,6 +1309,9 @@ public partial class ZoomBorder : Border
             return;
         _updating = true;
 
+        // Get the layout offset where Avalonia positioned the element
+        var layoutOffset = _element.Bounds.Position;
+
         var zoomX = viewportRect.Width / rect.Width;
         var zoomY = viewportRect.Height / rect.Height;
         var zoom = Math.Min(zoomX, zoomY);
@@ -1293,13 +1329,10 @@ public partial class ZoomBorder : Border
         var viewportCenterX = viewportRect.X + viewportRect.Width / 2.0;
         var viewportCenterY = viewportRect.Y + viewportRect.Height / 2.0;
 
-        // For a point (x,y) transformed by matrix (zoom, 0, 0, zoom, offsetX, offsetY):
-        // transformed_x = zoom * x + offsetX
-        // We want rectCenter to appear at viewportCenter:
-        // viewportCenterX = zoom * rectCenterX + offsetX
-        // Therefore: offsetX = viewportCenterX - zoom * rectCenterX
-        var offsetX = viewportCenterX - zoom * rectCenterX;
-        var offsetY = viewportCenterY - zoom * rectCenterY;
+        // The actual visual position is: layoutOffset + matrix offset + point * zoom
+        // So: matrix offset = viewportCenter - layoutOffset - point * zoom
+        var offsetX = viewportCenterX - layoutOffset.X - zoom * rectCenterX;
+        var offsetY = viewportCenterY - layoutOffset.Y - zoom * rectCenterY;
 
         // Temporarily disable constraints
         var previousEnableConstrains = EnableConstrains;
@@ -1872,6 +1905,9 @@ public partial class ZoomBorder : Border
         if (_element == null)
             return;
 
+        // Get the layout offset where Avalonia positioned the element
+        var layoutOffset = _element.Bounds.Position;
+
         var contentWidth = _element.Bounds.Width * _matrix.M11;
         var contentHeight = _element.Bounds.Height * _matrix.M22;
         var viewportWidth = Bounds.Width;
@@ -1886,14 +1922,21 @@ public partial class ZoomBorder : Border
         // Apply padding
         var padding = BoundsPadding;
 
+        // The actual visual position is: layoutOffset + matrix offset
+        // So: matrix offset = desired visual position - layoutOffset
+        
         // Constrain X
-        var maxOffsetX = viewportWidth - minVisibleWidth + padding.Right;
-        var minOffsetX = -contentWidth + minVisibleWidth - padding.Left;
+        // Visual position range: [minVisibleWidth - contentWidth - padding.Left, viewportWidth - minVisibleWidth + padding.Right]
+        // Matrix offset range: visual range shifted by -layoutOffset.X
+        var maxOffsetX = viewportWidth - minVisibleWidth + padding.Right - layoutOffset.X;
+        var minOffsetX = -contentWidth + minVisibleWidth - padding.Left - layoutOffset.X;
         offsetX = ClampValue(offsetX, minOffsetX, maxOffsetX);
 
         // Constrain Y
-        var maxOffsetY = viewportHeight - minVisibleHeight + padding.Bottom;
-        var minOffsetY = -contentHeight + minVisibleHeight - padding.Top;
+        // Visual position range: [minVisibleHeight - contentHeight - padding.Top, viewportHeight - minVisibleHeight + padding.Bottom]
+        // Matrix offset range: visual range shifted by -layoutOffset.Y
+        var maxOffsetY = viewportHeight - minVisibleHeight + padding.Bottom - layoutOffset.Y;
+        var minOffsetY = -contentHeight + minVisibleHeight - padding.Top - layoutOffset.Y;
         offsetY = ClampValue(offsetY, minOffsetY, maxOffsetY);
 
         _matrix = new Matrix(_matrix.M11, 0.0, 0.0, _matrix.M22, offsetX, offsetY);
@@ -1904,6 +1947,9 @@ public partial class ZoomBorder : Border
         if (_element == null)
             return;
 
+        // Get the layout offset where Avalonia positioned the element
+        var layoutOffset = _element.Bounds.Position;
+
         var contentWidth = _element.Bounds.Width * _matrix.M11;
         var contentHeight = _element.Bounds.Height * _matrix.M22;
         var viewportWidth = Bounds.Width;
@@ -1912,25 +1958,37 @@ public partial class ZoomBorder : Border
         var offsetX = _matrix.M31;
         var offsetY = _matrix.M32;
 
+        
+        var padding = BoundsPadding;
+
+        // The actual visual position is: layoutOffset + matrix offset
+        // So: matrix offset = desired position - layoutOffset
+
         // If content is smaller than viewport, center it
         if (contentWidth <= viewportWidth)
         {
-            offsetX = (viewportWidth - contentWidth) / 2.0;
+            var centeredX = (viewportWidth - contentWidth) / 2.0;
+            offsetX = centeredX - layoutOffset.X;
         }
         else
         {
-            // Constrain so no empty space is visible
-            offsetX = ClampValue(offsetX, viewportWidth - contentWidth, 0);
+            // Constrain so no empty space is visible (with padding)
+            // Visual position range should be: [viewportWidth - contentWidth - padding.Left, padding.Right]
+            // So matrix offset range is: visual range shifted by -layoutOffset.X
+            offsetX = ClampValue(offsetX, viewportWidth - contentWidth - padding.Left - layoutOffset.X, padding.Right - layoutOffset.X);
         }
 
         if (contentHeight <= viewportHeight)
         {
-            offsetY = (viewportHeight - contentHeight) / 2.0;
+            var centeredY = (viewportHeight - contentHeight) / 2.0;
+            offsetY = centeredY - layoutOffset.Y;
         }
         else
         {
-            // Constrain so no empty space is visible
-            offsetY = ClampValue(offsetY, viewportHeight - contentHeight, 0);
+            // Constrain so no empty space is visible (with padding)
+            // Visual position range should be: [viewportHeight - contentHeight - padding.Top, padding.Bottom]
+            // So matrix offset range is: visual range shifted by -layoutOffset.Y
+            offsetY = ClampValue(offsetY, viewportHeight - contentHeight - padding.Top - layoutOffset.Y, padding.Bottom - layoutOffset.Y);
         }
 
         _matrix = new Matrix(_matrix.M11, 0.0, 0.0, _matrix.M22, offsetX, offsetY);
@@ -1941,13 +1999,22 @@ public partial class ZoomBorder : Border
         if (_element == null)
             return;
 
+        // Get the layout offset where Avalonia positioned the element
+        var layoutOffset = _element.Bounds.Position;
+        
         var contentWidth = _element.Bounds.Width * _matrix.M11;
         var contentHeight = _element.Bounds.Height * _matrix.M22;
         var viewportWidth = Bounds.Width;
         var viewportHeight = Bounds.Height;
 
-        var offsetX = (viewportWidth - contentWidth) / 2.0;
-        var offsetY = (viewportHeight - contentHeight) / 2.0;
+        // Calculate where the content should be centered in viewport coordinates
+        var centeredX = (viewportWidth - contentWidth) / 2.0;
+        var centeredY = (viewportHeight - contentHeight) / 2.0;
+        
+        // The actual visual position is: layoutOffset + matrix offset
+        // So: matrix offset = desired position - layoutOffset
+        var offsetX = centeredX - layoutOffset.X;
+        var offsetY = centeredY - layoutOffset.Y;
 
         _matrix = new Matrix(_matrix.M11, 0.0, 0.0, _matrix.M22, offsetX, offsetY);
     }
