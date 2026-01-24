@@ -85,6 +85,14 @@ public partial class ZoomBorder : Border
     private bool _zoomIndicatorVisible;
 
     /// <summary>
+    /// Gets the layout offset where Avalonia positioned the child element within this ZoomBorder.
+    /// When a child element is smaller than the ZoomBorder, Avalonia centers it, resulting in a
+    /// non-zero Bounds.Position. This offset is in viewport coordinates and should NOT be scaled
+    /// by the transform matrix when converting between coordinate systems.
+    /// </summary>
+    private Point LayoutOffset => _element?.Bounds.Position ?? default;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ZoomBorder"/> class.
     /// </summary>
     public ZoomBorder()
@@ -997,8 +1005,7 @@ public partial class ZoomBorder : Border
         if (_element == null)
             return;
 
-        // Get the layout offset where Avalonia positioned the element
-        var layoutOffset = _element.Bounds.Position;
+        var layoutOffset = LayoutOffset;
 
         var viewportCenterX = (Bounds.Width - CenterPadding.Left - CenterPadding.Right) / 2.0 + CenterPadding.Left;
         var viewportCenterY = (Bounds.Height - CenterPadding.Top - CenterPadding.Bottom) / 2.0 + CenterPadding.Top;
@@ -1022,8 +1029,7 @@ public partial class ZoomBorder : Border
         if (_element == null)
             return;
 
-        // Get the layout offset where Avalonia positioned the element
-        var layoutOffset = _element.Bounds.Position;
+        var layoutOffset = LayoutOffset;
 
         var viewportCenterX = (Bounds.Width - CenterPadding.Left - CenterPadding.Right) / 2.0 + CenterPadding.Left;
         var viewportCenterY = (Bounds.Height - CenterPadding.Top - CenterPadding.Bottom) / 2.0 + CenterPadding.Top;
@@ -1084,9 +1090,7 @@ public partial class ZoomBorder : Border
         if (!_matrix.TryInvert(out var inverted))
             return viewportPoint;
 
-        // Account for layout offset: viewport coordinates need to be adjusted
-        // before applying the inverse matrix transform
-        var layoutOffset = _element?.Bounds.Position ?? new Point(0, 0);
+        var layoutOffset = LayoutOffset;
         var adjustedPoint = new Point(viewportPoint.X - layoutOffset.X, viewportPoint.Y - layoutOffset.Y);
 
         return inverted.Transform(adjustedPoint);
@@ -1101,8 +1105,7 @@ public partial class ZoomBorder : Border
     {
         var transformed = _matrix.Transform(contentPoint);
 
-        // Account for layout offset: add it after the matrix transform
-        var layoutOffset = _element?.Bounds.Position ?? new Point(0, 0);
+        var layoutOffset = LayoutOffset;
         return new Point(transformed.X + layoutOffset.X, transformed.Y + layoutOffset.Y);
     }
 
@@ -1116,9 +1119,7 @@ public partial class ZoomBorder : Border
         if (!_matrix.TryInvert(out var inverted))
             return viewportRect;
 
-        // Account for layout offset: viewport coordinates need to be adjusted
-        // before applying the inverse matrix transform
-        var layoutOffset = _element?.Bounds.Position ?? new Point(0, 0);
+        var layoutOffset = LayoutOffset;
         var adjustedRect = new Rect(
             viewportRect.X - layoutOffset.X,
             viewportRect.Y - layoutOffset.Y,
@@ -1141,8 +1142,7 @@ public partial class ZoomBorder : Border
         var topLeft = _matrix.Transform(contentRect.TopLeft);
         var bottomRight = _matrix.Transform(contentRect.BottomRight);
 
-        // Account for layout offset: add it after the matrix transform
-        var layoutOffset = _element?.Bounds.Position ?? new Point(0, 0);
+        var layoutOffset = LayoutOffset;
         return new Rect(
             topLeft.X + layoutOffset.X,
             topLeft.Y + layoutOffset.Y,
@@ -1251,8 +1251,7 @@ public partial class ZoomBorder : Border
             return;
         _updating = true;
 
-        // Get the layout offset where Avalonia positioned the element
-        var layoutOffset = _element.Bounds.Position;
+        var layoutOffset = LayoutOffset;
 
         var pad = padding ?? new Thickness(0);
         var viewportWidth = Bounds.Width - pad.Left - pad.Right;
@@ -1309,8 +1308,7 @@ public partial class ZoomBorder : Border
             return;
         _updating = true;
 
-        // Get the layout offset where Avalonia positioned the element
-        var layoutOffset = _element.Bounds.Position;
+        var layoutOffset = LayoutOffset;
 
         var zoomX = viewportRect.Width / rect.Width;
         var zoomY = viewportRect.Height / rect.Height;
@@ -1905,8 +1903,7 @@ public partial class ZoomBorder : Border
         if (_element == null)
             return;
 
-        // Get the layout offset where Avalonia positioned the element
-        var layoutOffset = _element.Bounds.Position;
+        var layoutOffset = LayoutOffset;
 
         var contentWidth = _element.Bounds.Width * _matrix.M11;
         var contentHeight = _element.Bounds.Height * _matrix.M22;
@@ -1947,8 +1944,7 @@ public partial class ZoomBorder : Border
         if (_element == null)
             return;
 
-        // Get the layout offset where Avalonia positioned the element
-        var layoutOffset = _element.Bounds.Position;
+        var layoutOffset = LayoutOffset;
 
         var contentWidth = _element.Bounds.Width * _matrix.M11;
         var contentHeight = _element.Bounds.Height * _matrix.M22;
@@ -1999,8 +1995,7 @@ public partial class ZoomBorder : Border
         if (_element == null)
             return;
 
-        // Get the layout offset where Avalonia positioned the element
-        var layoutOffset = _element.Bounds.Position;
+        var layoutOffset = LayoutOffset;
         
         var contentWidth = _element.Bounds.Width * _matrix.M11;
         var contentHeight = _element.Bounds.Height * _matrix.M22;

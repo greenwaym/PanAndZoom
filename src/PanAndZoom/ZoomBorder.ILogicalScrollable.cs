@@ -244,7 +244,7 @@ public partial class ZoomBorder : ILogicalScrollable
 
         // Account for the layout offset of _element within ZoomBorder
         // and transform the target bounds to viewport coordinates
-        var adjustedBounds = TransformContentToViewport(targetBounds, _element.Bounds.Position, _matrix);
+        var adjustedBounds = TransformContentToViewport(targetBounds, LayoutOffset, _matrix);
 
         // Get current viewport
         var viewportRect = new Rect(0, 0, Bounds.Width, Bounds.Height);
