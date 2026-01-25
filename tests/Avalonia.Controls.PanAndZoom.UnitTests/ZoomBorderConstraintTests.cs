@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Headless.XUnit;
 using Avalonia.Input;
 using Avalonia.Media;
@@ -636,5 +637,299 @@ public class ZoomBorderConstraintTests
         Assert.Equal(initialZoomY, zoomBorder.ZoomY, 4);
         Assert.Equal(initialOffsetX, zoomBorder.OffsetX, 4); // Offset should not drift
         Assert.Equal(initialOffsetY, zoomBorder.OffsetY, 4);
+    }
+    
+    [AvaloniaFact]
+    public void ZoomTo_WhenExceedingMaxLimit_ClampsRatioToPreventTranslationJump()
+    {
+        // Arrange - This tests the core fix: when ZoomTo would exceed max zoom,
+        // the ratio should be clamped BEFORE applying ScaleAtPrepend to prevent
+        // the translation jump bug.
+        var zoomBorder = new ZoomBorder
+        {
+            Width = 400,
+            Height = 300,
+            EnableZoom = true,
+            MaxZoomX = 2.0,
+            MaxZoomY = 2.0,
+            EnableConstrains = true,
+            Stretch = StretchMode.None
+        };
+        
+        var childElement = new Border
+        {
+            Width = 200,
+            Height = 150,
+            Background = Brushes.Red
+        };
+        
+        zoomBorder.Child = childElement;
+        
+        var window = new Window { Content = zoomBorder };
+        window.Show();
+        
+        // Use the same center point for all zoom operations
+        var zoomCenterX = 100.0;
+        var zoomCenterY = 75.0;
+        
+        // Set initial zoom to 1.5 using absolute Zoom() method
+        zoomBorder.Zoom(1.5, zoomCenterX, zoomCenterY, skipTransitions: true);
+        
+        // Verify we're at 1.5
+        Assert.Equal(1.5, zoomBorder.ZoomX, 2);
+        
+        // Record state before the zoom that will exceed limits
+        var initialOffsetX = zoomBorder.OffsetX;
+        var initialOffsetY = zoomBorder.OffsetY;
+        var initialZoom = zoomBorder.ZoomX;
+        
+        // Calculate where the zoom center point is in content space
+        var contentPointX = (zoomCenterX - initialOffsetX) / initialZoom;
+        var contentPointY = (zoomCenterY - initialOffsetY) / initialZoom;
+        
+        // Act - Try to zoom with ratio 1.5 (would go to 2.25, exceeds max 2.0)
+        zoomBorder.ZoomTo(1.5, zoomCenterX, zoomCenterY, skipTransitions: true);
+        
+        // Assert - Zoom should be clamped to exactly 2.0
+        Assert.Equal(2.0, zoomBorder.ZoomX, 4);
+        Assert.Equal(2.0, zoomBorder.ZoomY, 4);
+        
+        // The content point under the zoom center should still map to the same screen position
+        var finalOffsetX = zoomBorder.OffsetX;
+        var finalOffsetY = zoomBorder.OffsetY;
+        var finalZoom = zoomBorder.ZoomX;
+        
+        // Screen point = content point * zoom + offset
+        var screenPointX = contentPointX * finalZoom + finalOffsetX;
+        var screenPointY = contentPointY * finalZoom + finalOffsetY;
+        
+        // The screen point should be very close to the original zoom center
+        Assert.Equal(zoomCenterX, screenPointX, 1); // Allow small floating point tolerance
+        Assert.Equal(zoomCenterY, screenPointY, 1);
+    }
+    
+    [AvaloniaFact]
+    public void ZoomTo_WhenExceedingMinLimit_ClampsRatioToPreventTranslationJump()
+    {
+        // Arrange - Same test but for minimum zoom limit
+        var zoomBorder = new ZoomBorder
+        {
+            Width = 400,
+            Height = 300,
+            EnableZoom = true,
+            MinZoomX = 0.5,
+            MinZoomY = 0.5,
+            EnableConstrains = true,
+            Stretch = StretchMode.None
+        };
+        
+        var childElement = new Border
+        {
+            Width = 200,
+            Height = 150,
+            Background = Brushes.Red
+        };
+        
+        zoomBorder.Child = childElement;
+        
+        var window = new Window { Content = zoomBorder };
+        window.Show();
+        
+        var zoomCenterX = 100.0;
+        var zoomCenterY = 75.0;
+        
+        // Set initial zoom to 0.7 using absolute Zoom() method
+        zoomBorder.Zoom(0.7, zoomCenterX, zoomCenterY, skipTransitions: true);
+        
+        // Verify we're at 0.7
+        Assert.Equal(0.7, zoomBorder.ZoomX, 2);
+        
+        var initialOffsetX = zoomBorder.OffsetX;
+        var initialOffsetY = zoomBorder.OffsetY;
+        var initialZoom = zoomBorder.ZoomX;
+        
+        var contentPointX = (zoomCenterX - initialOffsetX) / initialZoom;
+        var contentPointY = (zoomCenterY - initialOffsetY) / initialZoom;
+        
+        // Act - Try to zoom with ratio 0.6 (would go to 0.42, below min 0.5)
+        zoomBorder.ZoomTo(0.6, zoomCenterX, zoomCenterY, skipTransitions: true);
+        
+        // Assert - Zoom should be clamped to exactly 0.5
+        Assert.Equal(0.5, zoomBorder.ZoomX, 4);
+        Assert.Equal(0.5, zoomBorder.ZoomY, 4);
+        
+        var finalOffsetX = zoomBorder.OffsetX;
+        var finalOffsetY = zoomBorder.OffsetY;
+        var finalZoom = zoomBorder.ZoomX;
+        
+        var screenPointX = contentPointX * finalZoom + finalOffsetX;
+        var screenPointY = contentPointY * finalZoom + finalOffsetY;
+        
+        Assert.Equal(zoomCenterX, screenPointX, 1);
+        Assert.Equal(zoomCenterY, screenPointY, 1);
+    }
+    
+    [AvaloniaFact]
+    public void Zoom_WhenExceedingMaxLimit_ClampsValueToPreventTranslationJump()
+    {
+        // Arrange - Test the Zoom() method (absolute zoom value) clamping
+        var zoomBorder = new ZoomBorder
+        {
+            Width = 400,
+            Height = 300,
+            EnableZoom = true,
+            MaxZoomX = 2.0,
+            MaxZoomY = 2.0,
+            EnableConstrains = true,
+            Stretch = StretchMode.None
+        };
+        
+        var childElement = new Border
+        {
+            Width = 200,
+            Height = 150,
+            Background = Brushes.Red
+        };
+        
+        zoomBorder.Child = childElement;
+        
+        var window = new Window { Content = zoomBorder };
+        window.Show();
+        
+        var zoomCenterX = 150.0;
+        var zoomCenterY = 100.0;
+        
+        // Act - Try to zoom to 3.0 (exceeds max 2.0)
+        zoomBorder.Zoom(3.0, zoomCenterX, zoomCenterY, skipTransitions: true);
+        
+        // Assert - Zoom should be clamped to exactly 2.0
+        Assert.Equal(2.0, zoomBorder.ZoomX, 4);
+        Assert.Equal(2.0, zoomBorder.ZoomY, 4);
+        
+        // Verify the zoom center point maps correctly
+        // For Zoom() with center (cx, cy), the formula is:
+        // offset = center - (zoom * center) = center * (1 - zoom)
+        var expectedOffsetX = zoomCenterX - (2.0 * zoomCenterX);
+        var expectedOffsetY = zoomCenterY - (2.0 * zoomCenterY);
+        
+        Assert.Equal(expectedOffsetX, zoomBorder.OffsetX, 2);
+        Assert.Equal(expectedOffsetY, zoomBorder.OffsetY, 2);
+    }
+    
+    [AvaloniaFact]
+    public void ZoomTo_RepeatedZoomAtLimit_NoAccumulatedTranslationDrift()
+    {
+        // Arrange - Test that repeated zoom attempts at the limit don't cause drift
+        var zoomBorder = new ZoomBorder
+        {
+            Width = 400,
+            Height = 300,
+            EnableZoom = true,
+            MaxZoomX = 2.0,
+            MaxZoomY = 2.0,
+            EnableConstrains = true,
+            Stretch = StretchMode.None
+        };
+        
+        var childElement = new Border
+        {
+            Width = 200,
+            Height = 150,
+            Background = Brushes.Red
+        };
+        
+        zoomBorder.Child = childElement;
+        
+        var window = new Window { Content = zoomBorder };
+        window.Show();
+        
+        // Use consistent zoom center for all operations
+        var zoomCenterX = 100.0;
+        var zoomCenterY = 75.0;
+        
+        // Get to exactly max zoom
+        zoomBorder.Zoom(2.0, zoomCenterX, zoomCenterY, skipTransitions: true);
+        
+        var initialOffsetX = zoomBorder.OffsetX;
+        var initialOffsetY = zoomBorder.OffsetY;
+        
+        // Act - Try to zoom in many times while already at max (using same center point)
+        for (int i = 0; i < 50; i++)
+        {
+            zoomBorder.ZoomTo(1.2, zoomCenterX, zoomCenterY, skipTransitions: true);
+        }
+        
+        // Assert - No drift should have occurred
+        Assert.Equal(2.0, zoomBorder.ZoomX, 4);
+        Assert.Equal(2.0, zoomBorder.ZoomY, 4);
+        Assert.Equal(initialOffsetX, zoomBorder.OffsetX, 4);
+        Assert.Equal(initialOffsetY, zoomBorder.OffsetY, 4);
+    }
+    
+    [AvaloniaFact]
+    public void ZoomTo_ApproachingLimit_GradualTransitionWithoutJump()
+    {
+        // Arrange - Test smooth transition as we approach the limit
+        // The point under the zoom center should stay stationary throughout
+        var zoomBorder = new ZoomBorder
+        {
+            Width = 400,
+            Height = 300,
+            EnableZoom = true,
+            MaxZoomX = 2.0,
+            MaxZoomY = 2.0,
+            EnableConstrains = true,
+            Stretch = StretchMode.None
+        };
+        
+        var childElement = new Border
+        {
+            Width = 200,
+            Height = 150,
+            Background = Brushes.Red
+        };
+        
+        zoomBorder.Child = childElement;
+        
+        var window = new Window { Content = zoomBorder };
+        window.Show();
+        
+        // Use the same zoom center for all operations
+        var zoomCenterX = 100.0;
+        var zoomCenterY = 75.0;
+        
+        // Start at 1.0 (default), then zoom to 1.5x
+        zoomBorder.ZoomTo(1.5, zoomCenterX, zoomCenterY, skipTransitions: true);
+        Assert.Equal(1.5, zoomBorder.ZoomX, 2);
+        
+        // Track the content point under the zoom center
+        var initialOffsetX = zoomBorder.OffsetX;
+        var initialOffsetY = zoomBorder.OffsetY;
+        var initialZoom = zoomBorder.ZoomX;
+        var contentPointX = (zoomCenterX - initialOffsetX) / initialZoom;
+        var contentPointY = (zoomCenterY - initialOffsetY) / initialZoom;
+        
+        // Act - Zoom in small increments, some will hit the limit
+        for (int i = 0; i < 10; i++)
+        {
+            zoomBorder.ZoomTo(1.1, zoomCenterX, zoomCenterY, skipTransitions: true);
+            
+            var currentOffsetX = zoomBorder.OffsetX;
+            var currentOffsetY = zoomBorder.OffsetY;
+            var currentZoom = zoomBorder.ZoomX;
+            
+            // The content point under zoom center should map back to zoom center
+            var currentScreenX = contentPointX * currentZoom + currentOffsetX;
+            var currentScreenY = contentPointY * currentZoom + currentOffsetY;
+            
+            // Assert - The zoom center point should stay stationary (within tolerance)
+            Assert.True(Math.Abs(currentScreenX - zoomCenterX) < 0.5,
+                $"Iteration {i}: X drifted from {zoomCenterX} to {currentScreenX}");
+            Assert.True(Math.Abs(currentScreenY - zoomCenterY) < 0.5,
+                $"Iteration {i}: Y drifted from {zoomCenterY} to {currentScreenY}");
+        }
+        
+        // Final zoom should be at max
+        Assert.Equal(2.0, zoomBorder.ZoomX, 4);
     }
 }
