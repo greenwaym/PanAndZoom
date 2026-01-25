@@ -86,7 +86,7 @@ public partial class ZoomBorder : Border
 
     /// <summary>
     /// Gets the layout offset where Avalonia positioned the child element within this ZoomBorder.
-    /// When a child element is smaller than the ZoomBorder, Avalonia centers it, resulting in a
+    /// When a child element is smaller or larger than the ZoomBorder, Avalonia centers it by default, resulting in a
     /// non-zero Bounds.Position. This offset is in viewport coordinates and should NOT be scaled
     /// by the transform matrix when converting between coordinate systems.
     /// </summary>

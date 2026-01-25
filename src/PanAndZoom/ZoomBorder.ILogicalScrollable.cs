@@ -30,9 +30,9 @@ public partial class ZoomBorder : ILogicalScrollable
     /// <param name="offset">The current scroll offset.</param>
     public static void CalculateScrollable(Rect source, Size borderSize, Matrix matrix, out Size extent, out Size viewport, out Vector offset)
     {
-        // The source.Position is the LAYOUT position where Avalonia placed the child element
-        // (e.g., centered at (50,50) when child is smaller than ZoomBorder).
-        // This layout offset should NOT be scaled by the zoom matrix - it's a fixed offset
+        // The source.Position is the layout position where Avalonia placed the child element
+        // (e.g., centered at (50,50)).
+        // This layout offset should not be scaled by the zoom matrix - it's a fixed offset
         // in viewport coordinates, not content coordinates.
         //
         // The content itself is in a coordinate system from (0,0) to (Width,Height).
@@ -114,7 +114,7 @@ public partial class ZoomBorder : ILogicalScrollable
     /// <remarks>
     /// When a child element has a differnt size than the ZoomBorder, Avalonia's layout system
     /// positions it (e.g., centered) resulting in a non-zero Position in elementBounds.
-    /// This layout offset is in viewport coordinates and should NOT be scaled by the
+    /// This layout offset is in viewport coordinates and should not be scaled by the
     /// transform matrix. This method correctly separates the two coordinate systems.
     /// </remarks>
     public static Rect TransformContentToViewport(Rect elementBounds, Matrix matrix)
