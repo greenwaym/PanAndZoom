@@ -157,6 +157,39 @@ public class GestureSimulatorTests
     }
 
     [AvaloniaFact]
+    public void HoldingStarted_UsesPressedPointerEventArgs()
+    {
+        var target = new Border { Width = 100, Height = 100, Background = Brushes.Red };
+        var window = new Window { Content = target };
+        window.Show();
+
+        var simulator = new GestureSimulator();
+        HoldingRoutedEventArgs? capturedHoldingArgs = null;
+
+        target.AddHandler(InputElement.HoldingEvent, (_, args) =>
+        {
+            if (args is HoldingRoutedEventArgs holding)
+            {
+                capturedHoldingArgs = holding;
+            }
+        });
+
+        simulator.HoldingStarted(target, new Point(25, 25));
+
+        Assert.NotNull(capturedHoldingArgs);
+
+        var pointerEventArgsProperty = typeof(HoldingRoutedEventArgs).GetProperty(
+            "PointerEventArgs",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+        Assert.NotNull(pointerEventArgsProperty);
+
+        var capturedPointerEventArgs = pointerEventArgsProperty!.GetValue(capturedHoldingArgs) as PointerEventArgs;
+        Assert.NotNull(capturedPointerEventArgs);
+        Assert.IsType<PointerPressedEventArgs>(capturedPointerEventArgs);
+        Assert.Equal(InputElement.PointerPressedEvent, capturedPointerEventArgs!.RoutedEvent);
+    }
+
+    [AvaloniaFact]
     public void HoldingCompleted_RaisesEvent_WithCorrectState()
     {
         // Arrange
@@ -181,6 +214,39 @@ public class GestureSimulatorTests
         // Assert
         Assert.NotNull(capturedState);
         Assert.Equal(HoldingState.Completed, capturedState);
+    }
+
+    [AvaloniaFact]
+    public void HoldingCompleted_UsesReleasedPointerEventArgs()
+    {
+        var target = new Border { Width = 100, Height = 100, Background = Brushes.Red };
+        var window = new Window { Content = target };
+        window.Show();
+
+        var simulator = new GestureSimulator();
+        HoldingRoutedEventArgs? capturedHoldingArgs = null;
+
+        target.AddHandler(InputElement.HoldingEvent, (_, args) =>
+        {
+            if (args is HoldingRoutedEventArgs holding)
+            {
+                capturedHoldingArgs = holding;
+            }
+        });
+
+        simulator.HoldingCompleted(target, new Point(50, 50));
+
+        Assert.NotNull(capturedHoldingArgs);
+
+        var pointerEventArgsProperty = typeof(HoldingRoutedEventArgs).GetProperty(
+            "PointerEventArgs",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+        Assert.NotNull(pointerEventArgsProperty);
+
+        var capturedPointerEventArgs = pointerEventArgsProperty!.GetValue(capturedHoldingArgs) as PointerEventArgs;
+        Assert.NotNull(capturedPointerEventArgs);
+        Assert.IsType<PointerReleasedEventArgs>(capturedPointerEventArgs);
+        Assert.Equal(InputElement.PointerReleasedEvent, capturedPointerEventArgs!.RoutedEvent);
     }
 
     [AvaloniaFact]

@@ -100,7 +100,8 @@ public class AvaloniaElement
         get
         {
             var bounds = _control.Bounds;
-            if (TopLevel.GetTopLevel(_control) is Visual root)
+            var root = _control.GetPresentationSource()?.RootVisual as Visual;
+            if (root != null)
             {
                 var transform = _control.TransformToVisual(root);
                 if (transform.HasValue)

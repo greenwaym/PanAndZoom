@@ -735,23 +735,48 @@ public class GestureSimulator
         }
 
         return (HoldingRoutedEventArgs)s_holdingRoutedEventArgsCtor.Invoke(
-            [holdingState, position, pointerType, CreatePointerEventArgs(target, position, pointerType)]);
+            [holdingState, position, pointerType, CreateHoldingPointerEventArgs(holdingState, target, position, pointerType)]);
     }
 
-    private PointerEventArgs CreatePointerEventArgs(Interactive target, Point position, PointerType pointerType)
+    private PointerEventArgs CreateHoldingPointerEventArgs(
+        HoldingState holdingState,
+        Interactive target,
+        Point position,
+        PointerType pointerType)
     {
         var pointer = CreatePointer(pointerType);
-        var properties = new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.Other);
+        var root = (Visual)target;
 
-        return new PointerEventArgs(
-            InputElement.PointerMovedEvent,
-            target,
-            pointer,
-            (Visual)target,
-            position,
-            _timestamp,
-            properties,
-            KeyModifiers.None);
+        return holdingState switch
+        {
+            HoldingState.Started => new PointerPressedEventArgs(
+                target,
+                pointer,
+                root,
+                position,
+                _timestamp,
+                new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.LeftButtonPressed),
+                KeyModifiers.None,
+                clickCount: 1),
+            HoldingState.Completed => new PointerReleasedEventArgs(
+                target,
+                pointer,
+                root,
+                position,
+                _timestamp,
+                new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.LeftButtonReleased),
+                KeyModifiers.None,
+                MouseButton.Left),
+            _ => new PointerEventArgs(
+                InputElement.PointerMovedEvent,
+                target,
+                pointer,
+                root,
+                position,
+                _timestamp,
+                new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.Other),
+                KeyModifiers.None)
+        };
     }
 
     private PointerDeltaEventArgs CreatePointerDeltaEventArgs(Interactive target, Vector delta, Point position, RoutedEvent routedEvent, KeyModifiers modifiers)
