@@ -321,10 +321,10 @@ public class ZoomBorderDoubleClickZoomTests
         // Act - Raise DoubleTapped event
         var pointerArgs = CreatePointerEventArgs(zoomBorder, new Point(200, 200));
         var tappedArgs = new TappedEventArgs(
-            Gestures.DoubleTappedEvent,
+            InputElement.DoubleTappedEvent,
             pointerArgs)
         {
-            RoutedEvent = Gestures.DoubleTappedEvent
+            RoutedEvent = InputElement.DoubleTappedEvent
         };
         zoomBorder.RaiseEvent(tappedArgs);
 
@@ -356,10 +356,10 @@ public class ZoomBorderDoubleClickZoomTests
         // Act - Raise DoubleTapped event
         var pointerArgs = CreatePointerEventArgs(zoomBorder, new Point(200, 200));
         var tappedArgs = new TappedEventArgs(
-            Gestures.DoubleTappedEvent,
+            InputElement.DoubleTappedEvent,
             pointerArgs)
         {
-            RoutedEvent = Gestures.DoubleTappedEvent
+            RoutedEvent = InputElement.DoubleTappedEvent
         };
         zoomBorder.RaiseEvent(tappedArgs);
 
@@ -424,10 +424,10 @@ public class ZoomBorderDoubleClickZoomTests
         // Act - Raise DoubleTapped event
         var pointerArgs = CreatePointerEventArgs(zoomBorder, new Point(200, 200));
         var tappedArgs = new TappedEventArgs(
-            Gestures.DoubleTappedEvent,
+            InputElement.DoubleTappedEvent,
             pointerArgs)
         {
-            RoutedEvent = Gestures.DoubleTappedEvent
+            RoutedEvent = InputElement.DoubleTappedEvent
         };
         zoomBorder.RaiseEvent(tappedArgs);
 
@@ -459,10 +459,10 @@ public class ZoomBorderDoubleClickZoomTests
         // Act - Raise DoubleTapped event
         var pointerArgs = CreatePointerEventArgs(zoomBorder, new Point(200, 200));
         var tappedArgs = new TappedEventArgs(
-            Gestures.DoubleTappedEvent,
+            InputElement.DoubleTappedEvent,
             pointerArgs)
         {
-            RoutedEvent = Gestures.DoubleTappedEvent
+            RoutedEvent = InputElement.DoubleTappedEvent
         };
         zoomBorder.RaiseEvent(tappedArgs);
 
@@ -494,10 +494,10 @@ public class ZoomBorderDoubleClickZoomTests
         // Act - Raise DoubleTapped event
         var pointerArgs = CreatePointerEventArgs(zoomBorder, new Point(200, 200));
         var tappedArgs = new TappedEventArgs(
-            Gestures.DoubleTappedEvent,
+            InputElement.DoubleTappedEvent,
             pointerArgs)
         {
-            RoutedEvent = Gestures.DoubleTappedEvent
+            RoutedEvent = InputElement.DoubleTappedEvent
         };
         zoomBorder.RaiseEvent(tappedArgs);
 
@@ -526,10 +526,10 @@ public class ZoomBorderDoubleClickZoomTests
         // Act - Raise DoubleTapped event
         var pointerArgs = CreatePointerEventArgs(zoomBorder, new Point(200, 200));
         var tappedArgs = new TappedEventArgs(
-            Gestures.DoubleTappedEvent,
+            InputElement.DoubleTappedEvent,
             pointerArgs)
         {
-            RoutedEvent = Gestures.DoubleTappedEvent
+            RoutedEvent = InputElement.DoubleTappedEvent
         };
         zoomBorder.RaiseEvent(tappedArgs);
 

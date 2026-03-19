@@ -101,7 +101,7 @@ public class ZoomBorderGestureRecognizerTests
         
         // Register handler BEFORE window.Show()
         var pinchEventCount = 0;
-        Gestures.AddPinchHandler(zoomBorder, (sender, e) => 
+        zoomBorder.AddHandler(InputElement.PinchEvent, (sender, e) => 
         {
             pinchEventCount++;
         });
@@ -159,7 +159,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchRaised = false;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            Gestures.AddPinchHandler(zb, (s, e) => pinchRaised = true));
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchRaised = true));
 
         var touch = new GestureRecognizerTestHelper();
 
@@ -178,7 +178,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchRaised = false;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            Gestures.AddPinchHandler(zb, (s, e) => pinchRaised = true));
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchRaised = true));
 
         var touch = new GestureRecognizerTestHelper();
 
@@ -197,7 +197,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchEventArgs = new List<PinchEventArgs>();
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            Gestures.AddPinchHandler(zb, (s, e) => pinchEventArgs.Add(e)));
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchEventArgs.Add(e)));
 
         var firstTouch = new GestureRecognizerTestHelper();
         var secondTouch = new GestureRecognizerTestHelper();
@@ -221,7 +221,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchEventArgs = new List<PinchEventArgs>();
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            Gestures.AddPinchHandler(zb, (s, e) => pinchEventArgs.Add(e)));
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchEventArgs.Add(e)));
 
         var firstTouch = new GestureRecognizerTestHelper();
         var secondTouch = new GestureRecognizerTestHelper();
@@ -245,7 +245,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchEventArgs = new List<PinchEventArgs>();
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            Gestures.AddPinchHandler(zb, (s, e) => pinchEventArgs.Add(e)));
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchEventArgs.Add(e)));
 
         var firstTouch = new GestureRecognizerTestHelper();
         var secondTouch = new GestureRecognizerTestHelper();
@@ -270,7 +270,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchEndedRaised = false;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            zb.AddHandler(Gestures.PinchEndedEvent, (_, _) => pinchEndedRaised = true));
+            zb.AddHandler(InputElement.PinchEndedEvent, (_, _) => pinchEndedRaised = true));
 
         var firstTouch = new GestureRecognizerTestHelper();
         var secondTouch = new GestureRecognizerTestHelper();
@@ -293,7 +293,7 @@ public class ZoomBorderGestureRecognizerTests
         ShowInWindow(zoomBorder);
         var pinchEndedRaised = false;
 
-        zoomBorder.AddHandler(Gestures.PinchEndedEvent, (_, _) => pinchEndedRaised = true);
+        zoomBorder.AddHandler(InputElement.PinchEndedEvent, (_, _) => pinchEndedRaised = true);
 
         var firstTouch = new GestureRecognizerTestHelper();
         var secondTouch = new GestureRecognizerTestHelper();
@@ -319,7 +319,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchCount = 0;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            Gestures.AddPinchHandler(zb, (s, e) => pinchCount++));
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchCount++));
 
         // Act - First pinch
         var first1 = new GestureRecognizerTestHelper();
@@ -357,7 +357,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var scrollRaised = false;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            zb.AddHandler(Gestures.ScrollGestureEvent, (_, _) => scrollRaised = true));
+            zb.AddHandler(InputElement.ScrollGestureEvent, (_, _) => scrollRaised = true));
 
         var touch = new GestureRecognizerTestHelper();
 
@@ -378,7 +378,7 @@ public class ZoomBorderGestureRecognizerTests
         ShowInWindow(zoomBorder);
         var scrollRaised = false;
 
-        zoomBorder.AddHandler(Gestures.ScrollGestureEvent, (_, _) => scrollRaised = true);
+        zoomBorder.AddHandler(InputElement.ScrollGestureEvent, (_, _) => scrollRaised = true);
 
         var touch = new GestureRecognizerTestHelper();
 
@@ -399,7 +399,7 @@ public class ZoomBorderGestureRecognizerTests
         ShowInWindow(zoomBorder);
         
         var scrollEventArgs = new List<ScrollGestureEventArgs>();
-        zoomBorder.AddHandler(Gestures.ScrollGestureEvent, (_, e) => scrollEventArgs.Add(e));
+        zoomBorder.AddHandler(InputElement.ScrollGestureEvent, (_, e) => scrollEventArgs.Add(e));
 
         var touch = new GestureRecognizerTestHelper();
 
@@ -425,7 +425,7 @@ public class ZoomBorderGestureRecognizerTests
         ShowInWindow(zoomBorder);
         
         var scrollEventArgs = new List<ScrollGestureEventArgs>();
-        zoomBorder.AddHandler(Gestures.ScrollGestureEvent, (_, e) => scrollEventArgs.Add(e));
+        zoomBorder.AddHandler(InputElement.ScrollGestureEvent, (_, e) => scrollEventArgs.Add(e));
 
         var touch = new GestureRecognizerTestHelper();
 
@@ -449,7 +449,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var scrollEndedRaised = false;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            zb.AddHandler(Gestures.ScrollGestureEndedEvent, (_, _) => scrollEndedRaised = true));
+            zb.AddHandler(InputElement.ScrollGestureEndedEvent, (_, _) => scrollEndedRaised = true));
 
         var touch = new GestureRecognizerTestHelper();
 
@@ -469,7 +469,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var scrollRaised = false;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            zb.AddHandler(Gestures.ScrollGestureEvent, (_, _) => scrollRaised = true));
+            zb.AddHandler(InputElement.ScrollGestureEvent, (_, _) => scrollRaised = true));
 
         // Use a mouse pointer instead of touch
         var mouse = new GestureRecognizerTestHelper(PointerType.Mouse);
@@ -490,7 +490,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var scrollRaised = false;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            zb.AddHandler(Gestures.ScrollGestureEvent, (_, _) => scrollRaised = true));
+            zb.AddHandler(InputElement.ScrollGestureEvent, (_, _) => scrollRaised = true));
 
         // Use a pen pointer
         var pen = new GestureRecognizerTestHelper(PointerType.Pen);
@@ -660,7 +660,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchRaised = false;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            Gestures.AddPinchHandler(zb, (s, e) => pinchRaised = true));
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchRaised = true));
 
         // Act
         MultiTouchTestHelperFactory.SimulatePinch(
@@ -681,7 +681,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchEventArgs = new List<PinchEventArgs>();
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            Gestures.AddPinchHandler(zb, (s, e) => pinchEventArgs.Add(e)));
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchEventArgs.Add(e)));
 
         // Act
         MultiTouchTestHelperFactory.SimulatePinchZoomIn(
@@ -702,7 +702,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchEventArgs = new List<PinchEventArgs>();
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            Gestures.AddPinchHandler(zb, (s, e) => pinchEventArgs.Add(e)));
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchEventArgs.Add(e)));
 
         // Act
         MultiTouchTestHelperFactory.SimulatePinchZoomOut(
@@ -723,7 +723,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchRaised = false;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            Gestures.AddPinchHandler(zb, (s, e) => pinchRaised = true));
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchRaised = true));
 
         // Act
         MultiTouchTestHelperFactory.SimulateTwoFingerPan(
@@ -743,7 +743,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchEventArgs = new List<PinchEventArgs>();
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            Gestures.AddPinchHandler(zb, (s, e) => pinchEventArgs.Add(e)));
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchEventArgs.Add(e)));
 
         // Act
         MultiTouchTestHelperFactory.SimulateRotation(
@@ -872,7 +872,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var scrollRaised = false;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            zb.AddHandler(Gestures.ScrollGestureEvent, (_, _) => scrollRaised = true));
+            zb.AddHandler(InputElement.ScrollGestureEvent, (_, _) => scrollRaised = true));
 
         var helper = new GestureRecognizerTestHelper();
 
@@ -925,7 +925,7 @@ public class ZoomBorderGestureRecognizerTests
         ShowInWindow(zoomBorder);
         var pinchCount = 0;
 
-        Gestures.AddPinchHandler(zoomBorder, (s, e) => pinchCount++);
+        zoomBorder.AddHandler(InputElement.PinchEvent, (s, e) => pinchCount++);
 
         var first = new GestureRecognizerTestHelper();
         var second = new GestureRecognizerTestHelper();
@@ -972,8 +972,8 @@ public class ZoomBorderGestureRecognizerTests
         var pinchRaised = false;
         var scrollRaised = false;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => {
-            Gestures.AddPinchHandler(zb, (s, e) => pinchRaised = true);
-            zb.AddHandler(Gestures.ScrollGestureEvent, (_, _) => scrollRaised = true);
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchRaised = true);
+            zb.AddHandler(InputElement.ScrollGestureEvent, (_, _) => scrollRaised = true);
         });
 
         // Act - First do a pinch
@@ -1015,7 +1015,7 @@ public class ZoomBorderGestureRecognizerTests
         zoomBorder.Child = new Border { Width = 200, Height = 150, Background = Brushes.Red };
         
         var pinchCount = 0;
-        Gestures.AddPinchHandler(zoomBorder, (s, e) => pinchCount++);
+        zoomBorder.AddHandler(InputElement.PinchEvent, (s, e) => pinchCount++);
         
         var window = new Window { Content = zoomBorder };
         window.Show();
@@ -1047,7 +1047,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchRaised = false;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            Gestures.AddPinchHandler(zb, (s, e) => pinchRaised = true));
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchRaised = true));
         zoomBorder.MinimumTouchPoints = 2;
 
         // Act - Single finger (below minimum)
@@ -1066,7 +1066,7 @@ public class ZoomBorderGestureRecognizerTests
         // Arrange - register handler before show
         var pinchCount = 0;
         var (zoomBorder, _) = SetupZoomBorderWithWindow(zb => 
-            Gestures.AddPinchHandler(zb, (s, e) => pinchCount++));
+            zb.AddHandler(InputElement.PinchEvent, (s, e) => pinchCount++));
         zoomBorder.MaximumTouchPoints = 2;
 
         // Act - Three fingers

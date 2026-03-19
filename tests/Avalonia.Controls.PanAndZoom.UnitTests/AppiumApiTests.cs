@@ -593,7 +593,7 @@ public class AppiumApiTests
 
         var action = driver.CreateTouchAction()
             .Press(100, 100)
-            .Swipe(SwipeDirection.Up, 200)
+            .Swipe(Avalonia.HeadlessTestingFramework.SwipeDirection.Up, 200)
             .Release();
 
         Assert.NotNull(action);

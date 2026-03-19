@@ -139,7 +139,7 @@ public class ZoomBorderInteractionScenarioTests
             0.0,
             0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         
@@ -182,7 +182,7 @@ public class ZoomBorderInteractionScenarioTests
         // Act - First use scroll gesture for panning
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(50, 0))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
         
@@ -431,7 +431,7 @@ public class ZoomBorderInteractionScenarioTests
             0.0,
             0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         
@@ -497,7 +497,7 @@ public class ZoomBorderInteractionScenarioTests
                 0.0,
                 0.0)
             {
-                RoutedEvent = Gestures.PinchEvent,
+                RoutedEvent = InputElement.PinchEvent,
                 Source = zoomBorder
             };
             

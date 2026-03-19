@@ -331,16 +331,16 @@ public class ZoomBorderRecordingTests : IDisposable
 
             // Act - Swipe in all directions
             simulator.AddMarker("SwipeRight");
-            simulator.RecordedSwipe(zoomBorder, center, SwipeDirection.Right, 80);
+            simulator.RecordedSwipe(zoomBorder, center, Avalonia.HeadlessTestingFramework.SwipeDirection.Right, 80);
 
             simulator.AddMarker("SwipeLeft");
-            simulator.RecordedSwipe(zoomBorder, center, SwipeDirection.Left, 80);
+            simulator.RecordedSwipe(zoomBorder, center, Avalonia.HeadlessTestingFramework.SwipeDirection.Left, 80);
 
             simulator.AddMarker("SwipeUp");
-            simulator.RecordedSwipe(zoomBorder, center, SwipeDirection.Up, 80);
+            simulator.RecordedSwipe(zoomBorder, center, Avalonia.HeadlessTestingFramework.SwipeDirection.Up, 80);
 
             simulator.AddMarker("SwipeDown");
-            simulator.RecordedSwipe(zoomBorder, center, SwipeDirection.Down, 80);
+            simulator.RecordedSwipe(zoomBorder, center, Avalonia.HeadlessTestingFramework.SwipeDirection.Down, 80);
 
             var stats = simulator.StopRecording();
 

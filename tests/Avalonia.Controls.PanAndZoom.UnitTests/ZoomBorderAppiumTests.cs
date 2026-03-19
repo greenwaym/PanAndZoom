@@ -385,7 +385,7 @@ public class ZoomBorderAppiumTests
         // Perform swipe using direction enum
         var action = new TouchAction(driver)
             .Press(element)
-            .Swipe(SwipeDirection.Right, 100)
+            .Swipe(Avalonia.HeadlessTestingFramework.SwipeDirection.Right, 100)
             .Release();
 
         action.Perform();

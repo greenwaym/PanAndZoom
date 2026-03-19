@@ -537,7 +537,7 @@ public class ZoomBorderTouchSimulatorTests
         zoomBorder.PointerReleased += (_, _) => releasedRaised = true;
 
         // Act
-        simulator.Swipe(zoomBorder, new Point(200, 150), SwipeDirection.Left, 100, 100);
+        simulator.Swipe(zoomBorder, new Point(200, 150), Avalonia.HeadlessTestingFramework.SwipeDirection.Left, 100, 100);
 
         // Assert
         Assert.True(pressedRaised, "PointerPressed should be raised");
@@ -570,10 +570,10 @@ public class ZoomBorderTouchSimulatorTests
         var simulator = new TouchInputSimulator();
 
         // Act & Assert - all directions should work without errors
-        simulator.Swipe(zoomBorder, new Point(200, 150), SwipeDirection.Left);
-        simulator.Swipe(zoomBorder, new Point(200, 150), SwipeDirection.Right);
-        simulator.Swipe(zoomBorder, new Point(200, 150), SwipeDirection.Up);
-        simulator.Swipe(zoomBorder, new Point(200, 150), SwipeDirection.Down);
+        simulator.Swipe(zoomBorder, new Point(200, 150), Avalonia.HeadlessTestingFramework.SwipeDirection.Left);
+        simulator.Swipe(zoomBorder, new Point(200, 150), Avalonia.HeadlessTestingFramework.SwipeDirection.Right);
+        simulator.Swipe(zoomBorder, new Point(200, 150), Avalonia.HeadlessTestingFramework.SwipeDirection.Up);
+        simulator.Swipe(zoomBorder, new Point(200, 150), Avalonia.HeadlessTestingFramework.SwipeDirection.Down);
 
         Assert.True(true, "All swipe directions should complete without errors");
     }

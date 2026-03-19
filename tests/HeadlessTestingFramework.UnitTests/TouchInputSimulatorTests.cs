@@ -343,7 +343,7 @@ public class TouchInputSimulatorTests
         double? receivedScale = null;
         Point? receivedOrigin = null;
 
-        border.AddHandler(Gestures.PinchEvent, (object? s, PinchEventArgs e) =>
+        border.AddHandler(InputElement.PinchEvent, (object? s, PinchEventArgs e) =>
         {
             eventRaised = true;
             receivedScale = e.Scale;
@@ -369,7 +369,7 @@ public class TouchInputSimulatorTests
         double receivedScale = 0;
         Point? receivedOrigin = null;
 
-        border.AddHandler(Gestures.PinchEvent, (object? s, PinchEventArgs e) =>
+        border.AddHandler(InputElement.PinchEvent, (object? s, PinchEventArgs e) =>
         {
             eventRaised = true;
             receivedScale = e.Scale;
@@ -393,7 +393,7 @@ public class TouchInputSimulatorTests
         var border = CreateBorderWithWindow();
         var eventRaised = false;
 
-        border.AddHandler(Gestures.PinchEndedEvent, (object? s, PinchEndedEventArgs e) =>
+        border.AddHandler(InputElement.PinchEndedEvent, (object? s, PinchEndedEventArgs e) =>
         {
             eventRaised = true;
         });
@@ -414,7 +414,7 @@ public class TouchInputSimulatorTests
         var eventRaised = false;
         Vector? receivedDelta = null;
 
-        border.AddHandler(Gestures.ScrollGestureEvent, (object? s, ScrollGestureEventArgs e) =>
+        border.AddHandler(InputElement.ScrollGestureEvent, (object? s, ScrollGestureEventArgs e) =>
         {
             eventRaised = true;
             receivedDelta = e.Delta;
@@ -436,7 +436,7 @@ public class TouchInputSimulatorTests
         var border = CreateBorderWithWindow();
         var eventRaised = false;
 
-        border.AddHandler(Gestures.ScrollGestureEndedEvent, (object? s, ScrollGestureEndedEventArgs e) =>
+        border.AddHandler(InputElement.ScrollGestureEndedEvent, (object? s, ScrollGestureEndedEventArgs e) =>
         {
             eventRaised = true;
         });
@@ -457,7 +457,7 @@ public class TouchInputSimulatorTests
         var eventRaised = false;
         Vector? receivedDelta = null;
 
-        border.AddHandler(Gestures.PointerTouchPadGestureMagnifyEvent, (object? s, PointerDeltaEventArgs e) =>
+        border.AddHandler(InputElement.PointerTouchPadGestureMagnifyEvent, (object? s, PointerDeltaEventArgs e) =>
         {
             eventRaised = true;
             receivedDelta = e.Delta;
@@ -480,7 +480,7 @@ public class TouchInputSimulatorTests
         var eventRaised = false;
         Vector? receivedDelta = null;
 
-        border.AddHandler(Gestures.PointerTouchPadGestureSwipeEvent, (object? s, PointerDeltaEventArgs e) =>
+        border.AddHandler(InputElement.PointerTouchPadGestureSwipeEvent, (object? s, PointerDeltaEventArgs e) =>
         {
             eventRaised = true;
             receivedDelta = e.Delta;
@@ -502,7 +502,7 @@ public class TouchInputSimulatorTests
         var border = CreateBorderWithWindow();
         var eventRaised = false;
 
-        border.AddHandler(Gestures.PointerTouchPadGestureRotateEvent, (object? s, PointerDeltaEventArgs e) =>
+        border.AddHandler(InputElement.PointerTouchPadGestureRotateEvent, (object? s, PointerDeltaEventArgs e) =>
         {
             eventRaised = true;
         });
@@ -549,8 +549,8 @@ public class TouchInputSimulatorTests
         var pinchCount = 0;
         var pinchEndedRaised = false;
 
-        border.AddHandler(Gestures.PinchEvent, (object? s, PinchEventArgs e) => pinchCount++);
-        border.AddHandler(Gestures.PinchEndedEvent, (object? s, PinchEndedEventArgs e) => pinchEndedRaised = true);
+        border.AddHandler(InputElement.PinchEvent, (object? s, PinchEventArgs e) => pinchCount++);
+        border.AddHandler(InputElement.PinchEndedEvent, (object? s, PinchEndedEventArgs e) => pinchEndedRaised = true);
 
         // Act
         simulator.SimulatePinchZoom(border, new Point(200, 150), startDistance: 50, endDistance: 150, steps: 5);
@@ -569,8 +569,8 @@ public class TouchInputSimulatorTests
         var scrollCount = 0;
         var scrollEndedRaised = false;
 
-        border.AddHandler(Gestures.ScrollGestureEvent, (object? s, ScrollGestureEventArgs e) => scrollCount++);
-        border.AddHandler(Gestures.ScrollGestureEndedEvent, (object? s, ScrollGestureEndedEventArgs e) => scrollEndedRaised = true);
+        border.AddHandler(InputElement.ScrollGestureEvent, (object? s, ScrollGestureEventArgs e) => scrollCount++);
+        border.AddHandler(InputElement.ScrollGestureEndedEvent, (object? s, ScrollGestureEndedEventArgs e) => scrollEndedRaised = true);
 
         // Act
         simulator.SimulateTwoFingerPan(border, new Point(100, 100), new Point(200, 150), steps: 5);
@@ -589,7 +589,7 @@ public class TouchInputSimulatorTests
         var pinchCount = 0;
         var hasAngleDelta = false;
 
-        border.AddHandler(Gestures.PinchEvent, (object? s, PinchEventArgs e) =>
+        border.AddHandler(InputElement.PinchEvent, (object? s, PinchEventArgs e) =>
         {
             pinchCount++;
             if (Math.Abs(e.AngleDelta) > 0.001)
@@ -638,7 +638,7 @@ public class TouchInputSimulatorTests
         border.PointerMoved += (s, e) => lastPosition = e.GetPosition(border);
 
         // Act
-        simulator.Swipe(border, new Point(200, 100), SwipeDirection.Left, distance: 100);
+        simulator.Swipe(border, new Point(200, 100), Avalonia.HeadlessTestingFramework.SwipeDirection.Left, distance: 100);
 
         // Assert
         Assert.NotNull(lastPosition);
@@ -656,7 +656,7 @@ public class TouchInputSimulatorTests
         border.PointerMoved += (s, e) => lastPosition = e.GetPosition(border);
 
         // Act
-        simulator.Swipe(border, new Point(100, 100), SwipeDirection.Right, distance: 100);
+        simulator.Swipe(border, new Point(100, 100), Avalonia.HeadlessTestingFramework.SwipeDirection.Right, distance: 100);
 
         // Assert
         Assert.NotNull(lastPosition);
@@ -674,7 +674,7 @@ public class TouchInputSimulatorTests
         border.PointerMoved += (s, e) => lastPosition = e.GetPosition(border);
 
         // Act
-        simulator.Swipe(border, new Point(100, 200), SwipeDirection.Up, distance: 100);
+        simulator.Swipe(border, new Point(100, 200), Avalonia.HeadlessTestingFramework.SwipeDirection.Up, distance: 100);
 
         // Assert
         Assert.NotNull(lastPosition);
@@ -692,7 +692,7 @@ public class TouchInputSimulatorTests
         border.PointerMoved += (s, e) => lastPosition = e.GetPosition(border);
 
         // Act
-        simulator.Swipe(border, new Point(100, 100), SwipeDirection.Down, distance: 100);
+        simulator.Swipe(border, new Point(100, 100), Avalonia.HeadlessTestingFramework.SwipeDirection.Down, distance: 100);
 
         // Assert
         Assert.NotNull(lastPosition);

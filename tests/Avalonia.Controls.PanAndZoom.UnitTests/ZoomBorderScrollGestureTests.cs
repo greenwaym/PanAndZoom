@@ -36,7 +36,7 @@ public class ZoomBorderScrollGestureTests
         // Act - Simulate scroll gesture to the right
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(50, 0))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
         
@@ -76,7 +76,7 @@ public class ZoomBorderScrollGestureTests
         // Act - Simulate scroll gesture to the left
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(-30, 0))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
         
@@ -116,7 +116,7 @@ public class ZoomBorderScrollGestureTests
         // Act - Simulate scroll gesture upward
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(0, -25))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
         
@@ -156,7 +156,7 @@ public class ZoomBorderScrollGestureTests
         // Act - Simulate scroll gesture downward
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(0, 40))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
         
@@ -197,7 +197,7 @@ public class ZoomBorderScrollGestureTests
         // Act - Simulate diagonal scroll gesture
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(30, 40))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
         
@@ -239,7 +239,7 @@ public class ZoomBorderScrollGestureTests
         // Act - Simulate scroll gesture when gesture pan is disabled
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(50, 50))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
         
@@ -271,7 +271,7 @@ public class ZoomBorderScrollGestureTests
         // Act - Simulate scroll gesture without child element
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(50, 50))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
         
@@ -309,7 +309,7 @@ public class ZoomBorderScrollGestureTests
         // Act - Simulate scroll gesture ended
         var scrollEndedEventArgs = new ScrollGestureEndedEventArgs(1)
         {
-            RoutedEvent = Gestures.ScrollGestureEndedEvent,
+            RoutedEvent = InputElement.ScrollGestureEndedEvent,
             Source = zoomBorder
         };
         
@@ -348,7 +348,7 @@ public class ZoomBorderScrollGestureTests
         // Act - Simulate multiple scroll gestures
         var scrollEventArgs1 = new ScrollGestureEventArgs(1, new Vector(20, 0))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
         
@@ -357,7 +357,7 @@ public class ZoomBorderScrollGestureTests
         
         var scrollEventArgs2 = new ScrollGestureEventArgs(1, new Vector(30, 0))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
         
@@ -400,7 +400,7 @@ public class ZoomBorderScrollGestureTests
         // Act - Simulate scroll gesture with zero delta
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(0, 0))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
         

@@ -133,7 +133,7 @@ public class ZoomBorderConstraintTests
         // Act - Try to zoom beyond maximum with pinch gesture
         var pinchEventArgs = new PinchEventArgs(2.0, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         
@@ -177,7 +177,7 @@ public class ZoomBorderConstraintTests
         // Act - Try to zoom below minimum with pinch gesture
         var pinchEventArgs = new PinchEventArgs(0.1, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         
@@ -289,7 +289,7 @@ public class ZoomBorderConstraintTests
         // Act - Try to scroll beyond limits
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(100, 100))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
         
@@ -497,7 +497,7 @@ public class ZoomBorderConstraintTests
             // Pan
             var scrollEventArgs = new ScrollGestureEventArgs(i + 1, new Vector(i % 2 == 0 ? 20 : -20, 0))
             {
-                RoutedEvent = Gestures.ScrollGestureEvent,
+                RoutedEvent = InputElement.ScrollGestureEvent,
                 Source = zoomBorder
             };
             
