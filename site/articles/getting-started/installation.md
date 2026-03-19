@@ -46,8 +46,8 @@ For xUnit headless tests, you also need the standard Avalonia headless test pack
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Avalonia.Headless.XUnit" Version="11.3.9" />
-  <PackageReference Include="Avalonia.Skia" Version="11.3.9" />
+  <PackageReference Include="Avalonia.Headless.XUnit" Version="12.0.0-rc1" />
+  <PackageReference Include="Avalonia.Skia" Version="12.0.0-rc1" />
 </ItemGroup>
 ```
 
