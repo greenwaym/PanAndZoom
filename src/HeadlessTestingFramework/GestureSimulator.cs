@@ -25,6 +25,13 @@ namespace Avalonia.HeadlessTestingFramework;
 /// </remarks>
 public class GestureSimulator
 {
+    private static readonly ConstructorInfo? s_holdingRoutedEventArgsCtor =
+        typeof(HoldingRoutedEventArgs).GetConstructor(
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            binder: null,
+            types: [typeof(HoldingState), typeof(Point), typeof(PointerType), typeof(PointerEventArgs)],
+            modifiers: null);
+
     private ulong _timestamp;
     private int _nextGestureId;
     private int _nextPointerId;
@@ -98,7 +105,7 @@ public class GestureSimulator
             MouseButton.Left);
         
         // Create TappedEventArgs with the proper constructor
-        var args = new TappedEventArgs(Gestures.TappedEvent, pointerEventArgs);
+        var args = new TappedEventArgs(InputElement.TappedEvent, pointerEventArgs);
         args.Source = target;
         
         target.RaiseEvent(args);
@@ -126,7 +133,7 @@ public class GestureSimulator
             modifiers,
             MouseButton.Left);
         
-        var args = new TappedEventArgs(Gestures.DoubleTappedEvent, pointerEventArgs);
+        var args = new TappedEventArgs(InputElement.DoubleTappedEvent, pointerEventArgs);
         args.Source = target;
         
         target.RaiseEvent(args);
@@ -154,7 +161,7 @@ public class GestureSimulator
             modifiers,
             MouseButton.Right);
         
-        var args = new TappedEventArgs(Gestures.RightTappedEvent, pointerEventArgs);
+        var args = new TappedEventArgs(InputElement.RightTappedEvent, pointerEventArgs);
         args.Source = target;
         
         target.RaiseEvent(args);
@@ -172,11 +179,9 @@ public class GestureSimulator
     /// <param name="pointerType">Type of pointer (Touch, Mouse, Pen).</param>
     public void HoldingStarted(Interactive target, Point position, PointerType pointerType = PointerType.Touch)
     {
-        var args = new HoldingRoutedEventArgs(HoldingState.Started, position, pointerType)
-        {
-            RoutedEvent = Gestures.HoldingEvent,
-            Source = target
-        };
+        var args = CreateHoldingRoutedEventArgs(HoldingState.Started, target, position, pointerType);
+        args.RoutedEvent = InputElement.HoldingEvent;
+        args.Source = target;
         
         target.RaiseEvent(args);
     }
@@ -189,11 +194,9 @@ public class GestureSimulator
     /// <param name="pointerType">Type of pointer (Touch, Mouse, Pen).</param>
     public void HoldingCompleted(Interactive target, Point position, PointerType pointerType = PointerType.Touch)
     {
-        var args = new HoldingRoutedEventArgs(HoldingState.Completed, position, pointerType)
-        {
-            RoutedEvent = Gestures.HoldingEvent,
-            Source = target
-        };
+        var args = CreateHoldingRoutedEventArgs(HoldingState.Completed, target, position, pointerType);
+        args.RoutedEvent = InputElement.HoldingEvent;
+        args.Source = target;
         
         target.RaiseEvent(args);
     }
@@ -206,11 +209,9 @@ public class GestureSimulator
     /// <param name="pointerType">Type of pointer (Touch, Mouse, Pen).</param>
     public void HoldingCancelled(Interactive target, Point position, PointerType pointerType = PointerType.Touch)
     {
-        var args = new HoldingRoutedEventArgs(HoldingState.Cancelled, position, pointerType)
-        {
-            RoutedEvent = Gestures.HoldingEvent,
-            Source = target
-        };
+        var args = CreateHoldingRoutedEventArgs(HoldingState.Canceled, target, position, pointerType);
+        args.RoutedEvent = InputElement.HoldingEvent;
+        args.Source = target;
         
         target.RaiseEvent(args);
     }
@@ -245,7 +246,7 @@ public class GestureSimulator
     {
         var args = new PinchEventArgs(scale, scaleOrigin, angleDelta, distance)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = target
         };
 
@@ -260,7 +261,7 @@ public class GestureSimulator
     {
         var args = new PinchEndedEventArgs()
         {
-            RoutedEvent = Gestures.PinchEndedEvent,
+            RoutedEvent = InputElement.PinchEndedEvent,
             Source = target
         };
 
@@ -336,7 +337,7 @@ public class GestureSimulator
         var id = gestureId ?? GetNextGestureId();
         var args = new ScrollGestureEventArgs(id, delta)
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = target
         };
 
@@ -352,7 +353,7 @@ public class GestureSimulator
     {
         var args = new ScrollGestureEndedEventArgs(gestureId)
         {
-            RoutedEvent = Gestures.ScrollGestureEndedEvent,
+            RoutedEvent = InputElement.ScrollGestureEndedEvent,
             Source = target
         };
 
@@ -386,7 +387,7 @@ public class GestureSimulator
             if (constructor == null) return false;
             
             var args = (RoutedEventArgs)constructor.Invoke(new object[] { gestureId, inertia });
-            args.RoutedEvent = Gestures.ScrollGestureInertiaStartingEvent;
+            args.RoutedEvent = InputElement.ScrollGestureInertiaStartingEvent;
             args.Source = target;
             
             target.RaiseEvent(args);
@@ -450,7 +451,7 @@ public class GestureSimulator
         var id = gestureId ?? GetNextGestureId();
         var args = new PullGestureEventArgs(id, delta, direction)
         {
-            RoutedEvent = Gestures.PullGestureEvent,
+            RoutedEvent = InputElement.PullGestureEvent,
             Source = target
         };
 
@@ -467,7 +468,7 @@ public class GestureSimulator
     {
         var args = new PullGestureEndedEventArgs(gestureId, direction)
         {
-            RoutedEvent = Gestures.PullGestureEndedEvent,
+            RoutedEvent = InputElement.PullGestureEndedEvent,
             Source = target
         };
 
@@ -522,7 +523,7 @@ public class GestureSimulator
     /// <param name="modifiers">Key modifiers.</param>
     public void TouchpadMagnify(Interactive target, Vector delta, Point position, KeyModifiers modifiers = KeyModifiers.None)
     {
-        var args = CreatePointerDeltaEventArgs(target, delta, position, Gestures.PointerTouchPadGestureMagnifyEvent, modifiers);
+        var args = CreatePointerDeltaEventArgs(target, delta, position, InputElement.PointerTouchPadGestureMagnifyEvent, modifiers);
         target.RaiseEvent(args);
     }
 
@@ -535,7 +536,7 @@ public class GestureSimulator
     /// <param name="modifiers">Key modifiers.</param>
     public void TouchpadRotate(Interactive target, double angleDelta, Point position, KeyModifiers modifiers = KeyModifiers.None)
     {
-        var args = CreatePointerDeltaEventArgs(target, new Vector(angleDelta, 0), position, Gestures.PointerTouchPadGestureRotateEvent, modifiers);
+        var args = CreatePointerDeltaEventArgs(target, new Vector(angleDelta, 0), position, InputElement.PointerTouchPadGestureRotateEvent, modifiers);
         target.RaiseEvent(args);
     }
 
@@ -548,7 +549,7 @@ public class GestureSimulator
     /// <param name="modifiers">Key modifiers.</param>
     public void TouchpadSwipe(Interactive target, Vector delta, Point position, KeyModifiers modifiers = KeyModifiers.None)
     {
-        var args = CreatePointerDeltaEventArgs(target, delta, position, Gestures.PointerTouchPadGestureSwipeEvent, modifiers);
+        var args = CreatePointerDeltaEventArgs(target, delta, position, InputElement.PointerTouchPadGestureSwipeEvent, modifiers);
         target.RaiseEvent(args);
     }
 
@@ -720,6 +721,37 @@ public class GestureSimulator
     private Avalonia.Input.Pointer CreatePointer(PointerType pointerType)
     {
         return new Avalonia.Input.Pointer(_nextPointerId++, pointerType, true);
+    }
+
+    private HoldingRoutedEventArgs CreateHoldingRoutedEventArgs(
+        HoldingState holdingState,
+        Interactive target,
+        Point position,
+        PointerType pointerType)
+    {
+        if (s_holdingRoutedEventArgsCtor is null)
+        {
+            throw new MissingMethodException(typeof(HoldingRoutedEventArgs).FullName, ".ctor(HoldingState, Point, PointerType, PointerEventArgs)");
+        }
+
+        return (HoldingRoutedEventArgs)s_holdingRoutedEventArgsCtor.Invoke(
+            [holdingState, position, pointerType, CreatePointerEventArgs(target, position, pointerType)]);
+    }
+
+    private PointerEventArgs CreatePointerEventArgs(Interactive target, Point position, PointerType pointerType)
+    {
+        var pointer = CreatePointer(pointerType);
+        var properties = new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.Other);
+
+        return new PointerEventArgs(
+            InputElement.PointerMovedEvent,
+            target,
+            pointer,
+            (Visual)target,
+            position,
+            _timestamp,
+            properties,
+            KeyModifiers.None);
     }
 
     private PointerDeltaEventArgs CreatePointerDeltaEventArgs(Interactive target, Vector delta, Point position, RoutedEvent routedEvent, KeyModifiers modifiers)
