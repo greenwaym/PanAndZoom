@@ -279,6 +279,57 @@ public class ZoomBorderVisualTreeLifecycleTests
         // Gesture should not work when disabled
         Assert.Equal(initialZoom, zoomBorder.ZoomX);
     }
+
+    [AvaloniaFact]
+    public void DetachDuringPinch_ReattachStartsFreshPinchState()
+    {
+        // Arrange
+        var zoomBorder = new ZoomBorder
+        {
+            Width = 400,
+            Height = 300,
+            EnableGestures = true,
+            EnableGestureZoom = true
+        };
+
+        var childElement = new Border
+        {
+            Width = 200,
+            Height = 150,
+            Background = Brushes.Red
+        };
+
+        zoomBorder.Child = childElement;
+
+        var window = new Window { Content = zoomBorder };
+        window.Show();
+
+        var firstPinchEventArgs = new PinchEventArgs(2.0, new Point(200, 150), 0.0, 0.0)
+        {
+            RoutedEvent = InputElement.PinchEvent,
+            Source = zoomBorder
+        };
+
+        zoomBorder.RaiseEvent(firstPinchEventArgs);
+        var zoomAfterFirstPinch = zoomBorder.ZoomX;
+
+        // Detach mid-pinch before PinchEnded can reset state.
+        window.Content = null;
+        window.Content = zoomBorder;
+
+        var secondPinchEventArgs = new PinchEventArgs(1.5, new Point(200, 150), 0.0, 0.0)
+        {
+            RoutedEvent = InputElement.PinchEvent,
+            Source = zoomBorder
+        };
+
+        // Act
+        zoomBorder.RaiseEvent(secondPinchEventArgs);
+
+        // Assert
+        Assert.True(zoomBorder.ZoomX > zoomAfterFirstPinch,
+            $"A fresh pinch after reattach should continue zooming in. Previous: {zoomAfterFirstPinch}, Current: {zoomBorder.ZoomX}");
+    }
     
     [AvaloniaFact]
     public void EventHandlerLifecycle_NoMemoryLeaks()

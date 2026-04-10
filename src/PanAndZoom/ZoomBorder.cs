@@ -252,6 +252,7 @@ public partial class ZoomBorder : Border
     private void PanAndZoom_DetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         Log($"[DetachedFromVisualTree] {Name}");
+        ResetPinchGestureState();
         DetachElement();
         
         // Remove pointer event handlers
