@@ -1,6 +1,7 @@
 // Copyright (c) Wiesław Šoltés. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 using System.Collections.Generic;
+using System.Reflection;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.Input;
@@ -250,6 +251,45 @@ public class GestureSimulatorTests
     }
 
     [AvaloniaFact]
+    public void HoldingStarted_UsesPresentationRootCoordinates_ForAncestorLookups()
+    {
+        var target = new Border { Width = 100, Height = 100, Background = Brushes.Red };
+        Canvas.SetLeft(target, 40);
+        Canvas.SetTop(target, 30);
+
+        var canvas = new Canvas { Width = 200, Height = 200 };
+        canvas.Children.Add(target);
+
+        var window = new Window
+        {
+            Width = 300,
+            Height = 300,
+            Content = canvas
+        };
+        window.Show();
+
+        var simulator = new GestureSimulator();
+        PointerEventArgs? capturedPointerEventArgs = null;
+
+        target.AddHandler(InputElement.HoldingEvent, (_, args) =>
+        {
+            if (args is HoldingRoutedEventArgs holding)
+            {
+                capturedPointerEventArgs = GetHoldingPointerEventArgs(holding);
+            }
+        });
+
+        simulator.HoldingStarted(target, new Point(25, 25));
+
+        Assert.NotNull(capturedPointerEventArgs);
+        var expectedCanvasPosition = target.TransformToVisual(canvas)!.Value.Transform(new Point(25, 25));
+        var expectedWindowPosition = target.TransformToVisual(window)!.Value.Transform(new Point(25, 25));
+
+        Assert.Equal(expectedCanvasPosition, capturedPointerEventArgs!.GetPosition(canvas));
+        Assert.Equal(expectedWindowPosition, capturedPointerEventArgs.GetPosition(window));
+    }
+
+    [AvaloniaFact]
     public void HoldingCancelled_RaisesEvent_WithCorrectState()
     {
         // Arrange
@@ -304,7 +344,46 @@ public class GestureSimulatorTests
         Assert.Equal(HoldingState.Completed, states[1]);
     }
 
+    [AvaloniaFact]
+    public void Hold_ReusesTheSamePointerId_AcrossLifecycleEvents()
+    {
+        var target = new Border { Width = 100, Height = 100, Background = Brushes.Red };
+        var window = new Window { Content = target };
+        window.Show();
+
+        var simulator = new GestureSimulator();
+        var pointerIds = new List<int>();
+
+        target.AddHandler(InputElement.HoldingEvent, (_, args) =>
+        {
+            if (args is HoldingRoutedEventArgs holding)
+            {
+                var pointerEventArgs = GetHoldingPointerEventArgs(holding);
+                pointerIds.Add(pointerEventArgs.Pointer.Id);
+            }
+        });
+
+        simulator.Hold(target, new Point(50, 50), holdDuration: 500);
+
+        Assert.Equal(2, pointerIds.Count);
+        Assert.Equal(pointerIds[0], pointerIds[1]);
+    }
+
     #endregion
+
+    private static PointerEventArgs GetHoldingPointerEventArgs(HoldingRoutedEventArgs args)
+    {
+        var pointerEventArgsProperty = typeof(HoldingRoutedEventArgs).GetProperty(
+            "PointerEventArgs",
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+        Assert.NotNull(pointerEventArgsProperty);
+
+        var pointerEventArgs = pointerEventArgsProperty!.GetValue(args) as PointerEventArgs;
+        Assert.NotNull(pointerEventArgs);
+
+        return pointerEventArgs!;
+    }
 
     #region Pinch Gesture Tests
 

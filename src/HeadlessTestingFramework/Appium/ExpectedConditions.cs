@@ -596,7 +596,7 @@ public static class ExpectedConditions
             {
                 // Check if element is still attached
                 _ = element.Control.Parent;
-                return TopLevel.GetTopLevel(element.Control) == null;
+                return element.Control.GetPresentationSource() == null;
             }
             catch
             {

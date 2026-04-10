@@ -8,6 +8,7 @@ using Avalonia.Input;
 using Avalonia.Input.GestureRecognizers;
 using Avalonia.Input.Raw;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 
 namespace Avalonia.HeadlessTestingFramework;
 
@@ -179,11 +180,7 @@ public class GestureSimulator
     /// <param name="pointerType">Type of pointer (Touch, Mouse, Pen).</param>
     public void HoldingStarted(Interactive target, Point position, PointerType pointerType = PointerType.Touch)
     {
-        var args = CreateHoldingRoutedEventArgs(HoldingState.Started, target, position, pointerType);
-        args.RoutedEvent = InputElement.HoldingEvent;
-        args.Source = target;
-        
-        target.RaiseEvent(args);
+        RaiseHolding(target, HoldingState.Started, position, pointerType);
     }
 
     /// <summary>
@@ -194,11 +191,7 @@ public class GestureSimulator
     /// <param name="pointerType">Type of pointer (Touch, Mouse, Pen).</param>
     public void HoldingCompleted(Interactive target, Point position, PointerType pointerType = PointerType.Touch)
     {
-        var args = CreateHoldingRoutedEventArgs(HoldingState.Completed, target, position, pointerType);
-        args.RoutedEvent = InputElement.HoldingEvent;
-        args.Source = target;
-        
-        target.RaiseEvent(args);
+        RaiseHolding(target, HoldingState.Completed, position, pointerType);
     }
 
     /// <summary>
@@ -209,11 +202,7 @@ public class GestureSimulator
     /// <param name="pointerType">Type of pointer (Touch, Mouse, Pen).</param>
     public void HoldingCancelled(Interactive target, Point position, PointerType pointerType = PointerType.Touch)
     {
-        var args = CreateHoldingRoutedEventArgs(HoldingState.Canceled, target, position, pointerType);
-        args.RoutedEvent = InputElement.HoldingEvent;
-        args.Source = target;
-        
-        target.RaiseEvent(args);
+        RaiseHolding(target, HoldingState.Canceled, position, pointerType);
     }
 
     /// <summary>
@@ -225,9 +214,10 @@ public class GestureSimulator
     /// <param name="pointerType">Type of pointer (Touch, Mouse, Pen).</param>
     public void Hold(Interactive target, Point position, int holdDuration = 500, PointerType pointerType = PointerType.Touch)
     {
-        HoldingStarted(target, position, pointerType);
+        var pointer = CreatePointer(pointerType);
+        RaiseHolding(target, HoldingState.Started, position, pointerType, pointer);
         AdvanceTime(holdDuration);
-        HoldingCompleted(target, position, pointerType);
+        RaiseHolding(target, HoldingState.Completed, position, pointerType, pointer);
     }
 
     #endregion
@@ -723,11 +713,31 @@ public class GestureSimulator
         return new Avalonia.Input.Pointer(_nextPointerId++, pointerType, true);
     }
 
+    private void RaiseHolding(
+        Interactive target,
+        HoldingState holdingState,
+        Point position,
+        PointerType pointerType,
+        Avalonia.Input.Pointer? pointer = null)
+    {
+        var args = CreateHoldingRoutedEventArgs(
+            holdingState,
+            target,
+            position,
+            pointerType,
+            pointer ?? CreatePointer(pointerType));
+        args.RoutedEvent = InputElement.HoldingEvent;
+        args.Source = target;
+
+        target.RaiseEvent(args);
+    }
+
     private HoldingRoutedEventArgs CreateHoldingRoutedEventArgs(
         HoldingState holdingState,
         Interactive target,
         Point position,
-        PointerType pointerType)
+        PointerType pointerType,
+        Avalonia.Input.Pointer pointer)
     {
         if (s_holdingRoutedEventArgsCtor is null)
         {
@@ -735,17 +745,27 @@ public class GestureSimulator
         }
 
         return (HoldingRoutedEventArgs)s_holdingRoutedEventArgsCtor.Invoke(
-            [holdingState, position, pointerType, CreateHoldingPointerEventArgs(holdingState, target, position, pointerType)]);
+            [holdingState, position, pointerType, CreateHoldingPointerEventArgs(holdingState, target, position, pointer)]);
     }
 
     private PointerEventArgs CreateHoldingPointerEventArgs(
         HoldingState holdingState,
         Interactive target,
         Point position,
-        PointerType pointerType)
+        Avalonia.Input.Pointer pointer)
     {
-        var pointer = CreatePointer(pointerType);
-        var root = (Visual)target;
+        var targetVisual = (Visual)target;
+        var root = ResolvePresentationRoot(target);
+        var rootPosition = position;
+
+        if (root != targetVisual)
+        {
+            var transform = targetVisual.TransformToVisual(root);
+            if (transform.HasValue)
+            {
+                rootPosition = transform.Value.Transform(position);
+            }
+        }
 
         return holdingState switch
         {
@@ -753,7 +773,7 @@ public class GestureSimulator
                 target,
                 pointer,
                 root,
-                position,
+                rootPosition,
                 _timestamp,
                 new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.LeftButtonPressed),
                 KeyModifiers.None,
@@ -762,7 +782,7 @@ public class GestureSimulator
                 target,
                 pointer,
                 root,
-                position,
+                rootPosition,
                 _timestamp,
                 new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.LeftButtonReleased),
                 KeyModifiers.None,
@@ -772,11 +792,17 @@ public class GestureSimulator
                 target,
                 pointer,
                 root,
-                position,
+                rootPosition,
                 _timestamp,
                 new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.Other),
                 KeyModifiers.None)
         };
+    }
+
+    private static Visual ResolvePresentationRoot(Interactive target)
+    {
+        var targetVisual = (Visual)target;
+        return targetVisual.GetPresentationSource()?.RootVisual as Visual ?? targetVisual;
     }
 
     private PointerDeltaEventArgs CreatePointerDeltaEventArgs(Interactive target, Vector delta, Point position, RoutedEvent routedEvent, KeyModifiers modifiers)
