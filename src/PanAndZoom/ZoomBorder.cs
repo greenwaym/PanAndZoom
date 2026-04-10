@@ -472,7 +472,7 @@ public partial class ZoomBorder : Border
             case WheelBehaviorMode.PanVertical:
                 if (EnablePan)
                 {
-                    PanDelta(0, 10 * e.Delta.Y * WheelPanSensitivity);
+                    PanDelta(10 * e.Delta.X * WheelPanSensitivity, 10 * e.Delta.Y * WheelPanSensitivity);
                     e.Handled = true;
                 }
                 break;
@@ -480,7 +480,7 @@ public partial class ZoomBorder : Border
             case WheelBehaviorMode.PanHorizontal:
                 if (EnablePan)
                 {
-                    PanDelta(10 * e.Delta.X * WheelPanSensitivity, 0);
+                    PanDelta(10 * e.Delta.Y * WheelPanSensitivity, 10 * e.Delta.X * WheelPanSensitivity);
                     e.Handled = true;
                 }
                 break;
