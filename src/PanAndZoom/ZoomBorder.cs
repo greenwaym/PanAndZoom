@@ -79,7 +79,11 @@ public partial class ZoomBorder : Border
     private DateTime _gestureStartTime;
     private bool _gestureRecognized;
     private bool _simultaneousGestureActive;
-    
+
+    // Pinch tracking
+    private bool _pinchActive;
+    private double _lastPinchScale = 1.0;
+
     // Zoom indicator
     private DispatcherTimer? _zoomIndicatorTimer;
     private bool _zoomIndicatorVisible;
@@ -279,7 +283,7 @@ public partial class ZoomBorder : Border
         {
             return;
         }
-        
+
         // Check gesture recognition delay
         if (!_gestureRecognized)
         {
@@ -287,15 +291,15 @@ public partial class ZoomBorder : Border
             {
                 _gestureStartTime = DateTime.Now;
             }
-            
+
             if ((DateTime.Now - _gestureStartTime) < GestureRecognitionDelay)
             {
                 return;
             }
-            
+
             _gestureRecognized = true;
         }
-        
+
         // Check if simultaneous pan/zoom is allowed
         if (!EnableSimultaneousPanZoom && _isPanning)
         {
@@ -303,14 +307,17 @@ public partial class ZoomBorder : Border
         }
 
         Log($"[PinchGesture] {Name} Scale: {e.Scale}, AngleDelta: {e.AngleDelta}");
-        
-        // ScaleOrigin is already in element pixel coordinates (midpoint of two touch points)
-        // from Avalonia's PinchGestureRecognizer, so use it directly
-        var elementPoint = e.ScaleOrigin;
-        
+
+        // Start from the reported pinch origin
+        var visualPoint = e.ScaleOrigin;
+
+        // Convert the pinch origin from ZoomBorder coordinates into child coordinates.
+        var translatedPoint = this.TranslatePoint(visualPoint, _element);
+        var zoomCenter = translatedPoint ?? visualPoint;
+
         // Mark simultaneous gesture as active
         _simultaneousGestureActive = EnableSimultaneousPanZoom && _isPanning;
-        
+
         // Raise GestureStarted event
         var previousMatrix = _matrix;
         var gestureArgs = new GestureEventArgs(
@@ -319,30 +326,43 @@ public partial class ZoomBorder : Border
             _zoomY,
             _offsetX,
             _offsetY,
-            elementPoint.X,
-            elementPoint.Y,
+            zoomCenter.X,
+            zoomCenter.Y,
             e.Scale - 1.0,
             _matrix,
             previousMatrix
         );
         RaiseGestureStarted(gestureArgs);
-        
+
         // Apply zoom if enabled
         if (EnableGestureZoom)
         {
-            // Use ZoomTo with the scale factor directly
-            // e.Scale is a multiplicative factor (e.g., 1.2 for 20% zoom in)
-            ZoomTo(e.Scale, elementPoint.X, elementPoint.Y);
+            if (!_pinchActive)
+            {
+                _pinchActive = true;
+                _lastPinchScale = 1.0;
+            }
+
+            // Avalonia pinch scale is cumulative since gesture start,
+            // so convert it to an incremental factor.
+            var deltaScale = e.Scale / _lastPinchScale;
+            _lastPinchScale = e.Scale;
+
+            if (!double.IsNaN(deltaScale) && !double.IsInfinity(deltaScale) && deltaScale > 0.0)
+            {
+                Log($"[ZoomTo] factor: {deltaScale}, center: {zoomCenter.X}, {zoomCenter.Y}");
+                ZoomTo(deltaScale, zoomCenter.X, zoomCenter.Y);
+            }
         }
-        
+
         // Apply rotation if enabled
         if (EnableGestureRotation && Math.Abs(e.AngleDelta) > 0.001)
         {
             // AngleDelta is in degrees (positive = clockwise, negative = counterclockwise)
             // Use RotateAt to rotate around the pinch center point
-            RotateAt(e.AngleDelta, elementPoint, animate: false);
+            RotateAt(e.AngleDelta, zoomCenter, animate: false);
         }
-        
+
         e.Handled = true;
     }
 
@@ -350,15 +370,18 @@ public partial class ZoomBorder : Border
     {
         if (!EnableGestures)
             return;
-            
+
         Log($"[PinchGestureEnded] {Name}");
-        
+
         // Reset gesture tracking state
         _gestureRecognized = false;
         _gestureStartTime = default;
         _simultaneousGestureActive = false;
-        
+
         // Raise GestureEnded event
+        _pinchActive = false;
+        _lastPinchScale = 1.0;
+
         var gestureArgs = new GestureEventArgs(
             "Pinch",
             _zoomX,
@@ -375,7 +398,7 @@ public partial class ZoomBorder : Border
         
         // Add to view history after pinch gesture completes
         AddToViewHistory();
-        
+
         e.Handled = true;
     }
 
@@ -389,7 +412,7 @@ public partial class ZoomBorder : Border
         {
             return;
         }
-        
+
         // Check if simultaneous pan/zoom is allowed when another gesture is active
         if (!EnableSimultaneousPanZoom && _simultaneousGestureActive)
         {
@@ -397,7 +420,7 @@ public partial class ZoomBorder : Border
         }
 
         Log($"[ScrollGesture] {Name} Delta: {e.Delta}");
-        
+
         // Raise GestureStarted event
         var previousMatrix = _matrix;
         var gestureArgs = new GestureEventArgs(
@@ -413,20 +436,20 @@ public partial class ZoomBorder : Border
             previousMatrix
         );
         RaiseGestureStarted(gestureArgs);
-        
+
         // Use the scroll delta for panning. Scroll gesture delta follows
         // scroll direction semantics (positive = scroll down/right), which is
         // opposite to direct manipulation (content following finger). Invert
         // it so the content moves with the finger on touch/gesture devices.
         PanDelta(-e.Delta.X, -e.Delta.Y);
-        
+
         e.Handled = true;
     }
 
     private void Border_ScrollGestureEnded(object? sender, ScrollGestureEndedEventArgs e)
     {
         Log($"[ScrollGestureEnded] {Name}");
-        
+
         // Raise GestureEnded event
         var gestureArgs = new GestureEventArgs(
             "Scroll",
@@ -444,7 +467,7 @@ public partial class ZoomBorder : Border
         
         // Add to view history after scroll gesture completes
         AddToViewHistory();
-        
+
         e.Handled = true;
     }
 
@@ -2337,7 +2360,7 @@ public partial class ZoomBorder : Border
 
         _updating = true;
 
-        Log("[ZoomTo]");
+        Log($"[ZoomTo] factor: {ratio}, center: {x}, {y}");
         var previousMatrix = _matrix;
         var previousZoomX = _zoomX;
         var previousZoomY = _zoomY;
