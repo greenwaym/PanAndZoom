@@ -224,7 +224,13 @@ public partial class ZoomBorder : ILogicalScrollable
         // If targetRect has zero size, use the target's bounds
         if (targetRect.Width <= 0 && targetRect.Height <= 0)
         {
-            targetBounds = target.Bounds;
+            // For _element itself, use content-space bounds (origin 0,0) since
+            // target.Bounds.Position is the layout offset, and TransformContentToViewport
+            // will add it again. For other controls, keep target.Bounds as-is since
+            // TransformToVisual below handles the coordinate conversion.
+            targetBounds = target == _element
+                ? new Rect(0, 0, target.Bounds.Width, target.Bounds.Height)
+                : target.Bounds;
         }
 
         // Try to translate target coordinates to our content coordinate system
