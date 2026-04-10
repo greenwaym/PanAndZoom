@@ -190,7 +190,7 @@ public class TouchInputSimulator
     {
         var args = new PinchEventArgs(scale, scaleOrigin, angleDelta, distance)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = target
         };
 
@@ -205,7 +205,7 @@ public class TouchInputSimulator
     {
         var args = new PinchEndedEventArgs()
         {
-            RoutedEvent = Gestures.PinchEndedEvent,
+            RoutedEvent = InputElement.PinchEndedEvent,
             Source = target
         };
 
@@ -222,7 +222,7 @@ public class TouchInputSimulator
     {
         var args = new ScrollGestureEventArgs(gestureId, delta)
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = target
         };
 
@@ -238,7 +238,7 @@ public class TouchInputSimulator
     {
         var args = new ScrollGestureEndedEventArgs(gestureId)
         {
-            RoutedEvent = Gestures.ScrollGestureEndedEvent,
+            RoutedEvent = InputElement.ScrollGestureEndedEvent,
             Source = target
         };
 
@@ -254,7 +254,7 @@ public class TouchInputSimulator
     /// <param name="modifiers">Key modifiers.</param>
     public void TouchpadMagnify(Interactive target, Vector delta, Point position, KeyModifiers modifiers = KeyModifiers.None)
     {
-        var args = CreatePointerDeltaEventArgs(target, delta, position, Gestures.PointerTouchPadGestureMagnifyEvent, modifiers);
+        var args = CreatePointerDeltaEventArgs(target, delta, position, InputElement.PointerTouchPadGestureMagnifyEvent, modifiers);
         target.RaiseEvent(args);
     }
 
@@ -267,7 +267,7 @@ public class TouchInputSimulator
     /// <param name="modifiers">Key modifiers.</param>
     public void TouchpadSwipe(Interactive target, Vector delta, Point position, KeyModifiers modifiers = KeyModifiers.None)
     {
-        var args = CreatePointerDeltaEventArgs(target, delta, position, Gestures.PointerTouchPadGestureSwipeEvent, modifiers);
+        var args = CreatePointerDeltaEventArgs(target, delta, position, InputElement.PointerTouchPadGestureSwipeEvent, modifiers);
         target.RaiseEvent(args);
     }
 
@@ -280,7 +280,7 @@ public class TouchInputSimulator
     /// <param name="modifiers">Key modifiers.</param>
     public void TouchpadRotate(Interactive target, double delta, Point position, KeyModifiers modifiers = KeyModifiers.None)
     {
-        var args = CreatePointerDeltaEventArgs(target, new Vector(delta, 0), position, Gestures.PointerTouchPadGestureRotateEvent, modifiers);
+        var args = CreatePointerDeltaEventArgs(target, new Vector(delta, 0), position, InputElement.PointerTouchPadGestureRotateEvent, modifiers);
         target.RaiseEvent(args);
     }
 

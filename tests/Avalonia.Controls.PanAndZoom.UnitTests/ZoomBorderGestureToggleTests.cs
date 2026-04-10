@@ -85,7 +85,7 @@ public class ZoomBorderGestureToggleTests
         // Act - Simulate pinch gesture when gesture zoom is disabled
         var pinchEventArgs = new PinchEventArgs(1.5, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         
@@ -126,7 +126,7 @@ public class ZoomBorderGestureToggleTests
         // Act - Simulate scroll gesture when gesture pan is disabled
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(50, 50))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
         

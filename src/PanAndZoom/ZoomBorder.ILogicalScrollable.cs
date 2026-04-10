@@ -179,7 +179,10 @@ public partial class ZoomBorder : ILogicalScrollable
     /// <inheritdoc/>
     Size IScrollable.Viewport => _viewport;
 
-    bool ILogicalScrollable.CanHorizontallyScroll
+    /// <summary>
+    /// Gets or sets whether horizontal scrolling is enabled for the logical scroll contract.
+    /// </summary>
+    public bool CanHorizontallyScroll
     {
         get => _canHorizontallyScroll;
         set
@@ -189,7 +192,10 @@ public partial class ZoomBorder : ILogicalScrollable
         }
     }
 
-    bool ILogicalScrollable.CanVerticallyScroll
+    /// <summary>
+    /// Gets or sets whether vertical scrolling is enabled for the logical scroll contract.
+    /// </summary>
+    public bool CanVerticallyScroll
     {
         get => _canVerticallyScroll;
         set

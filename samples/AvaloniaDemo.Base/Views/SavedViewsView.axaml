@@ -15,10 +15,10 @@
 
       <TextBlock Text="Save New View:" FontWeight="SemiBold" />
       <TextBlock Text="Name:" FontSize="11" />
-      <TextBox Text="{Binding ViewName}" Watermark="Enter view name..." />
+      <TextBox Text="{Binding ViewName}" PlaceholderText="Enter view name..." />
 
       <TextBlock Text="Description:" FontSize="11" />
-      <TextBox Text="{Binding ViewDescription}" Watermark="Optional description..." />
+      <TextBox Text="{Binding ViewDescription}" PlaceholderText="Optional description..." />
 
       <Button Content="Save Current View" Click="SaveView_Click" />
 

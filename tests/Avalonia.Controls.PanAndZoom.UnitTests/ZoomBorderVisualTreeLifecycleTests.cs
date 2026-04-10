@@ -218,7 +218,7 @@ public class ZoomBorderVisualTreeLifecycleTests
         // Test gesture functionality
         var pinchEventArgs = new PinchEventArgs(1.5, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         
@@ -269,7 +269,7 @@ public class ZoomBorderVisualTreeLifecycleTests
         // The count might remain the same but they should be new instances
         var pinchEventArgs = new PinchEventArgs(1.5, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         

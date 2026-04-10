@@ -53,8 +53,8 @@ public class ControlFinderTests
         var text1 = new TextBlock { Name = "LabelText", Text = "Hello World" };
         var text2 = new TextBlock { Name = "DescText", Text = "Description goes here" };
         
-        var input1 = new TextBox { Name = "NameInput", Text = "John Doe", Watermark = "Enter name" };
-        var input2 = new TextBox { Name = "EmailInput", Text = "", Watermark = "Enter email" };
+        var input1 = new TextBox { Name = "NameInput", Text = "John Doe", PlaceholderText = "Enter name" };
+        var input2 = new TextBox { Name = "EmailInput", Text = "", PlaceholderText = "Enter email" };
         
         // Nested structure
         var container = new Border

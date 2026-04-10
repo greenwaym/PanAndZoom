@@ -215,13 +215,13 @@ public partial class ZoomBorder : Border
         KeyDown += Border_KeyDown;
 
         // Add gesture event handlers
-        AddHandler(Gestures.PinchEvent, Border_PinchGesture);
-        AddHandler(Gestures.PinchEndedEvent, Border_PinchGestureEnded);
-        AddHandler(Gestures.ScrollGestureEvent, Border_ScrollGesture);
-        AddHandler(Gestures.ScrollGestureEndedEvent, Border_ScrollGestureEnded);
+        AddHandler(InputElement.PinchEvent, Border_PinchGesture);
+        AddHandler(InputElement.PinchEndedEvent, Border_PinchGestureEnded);
+        AddHandler(InputElement.ScrollGestureEvent, Border_ScrollGesture);
+        AddHandler(InputElement.ScrollGestureEndedEvent, Border_ScrollGestureEnded);
         
         // Add touch pad gesture handler
-        Gestures.AddPointerTouchPadGestureMagnifyHandler(this, Border_Magnified);
+        AddHandler(InputElement.PointerTouchPadGestureMagnifyEvent, Border_Magnified);
 
         // Update gesture recognizers based on the new state
         UpdateGestureRecognizers();
@@ -249,13 +249,13 @@ public partial class ZoomBorder : Border
         KeyDown -= Border_KeyDown;
 
         // Remove gesture event handlers
-        RemoveHandler(Gestures.PinchEvent, Border_PinchGesture);
-        RemoveHandler(Gestures.PinchEndedEvent, Border_PinchGestureEnded);
-        RemoveHandler(Gestures.ScrollGestureEvent, Border_ScrollGesture);
-        RemoveHandler(Gestures.ScrollGestureEndedEvent, Border_ScrollGestureEnded);
+        RemoveHandler(InputElement.PinchEvent, Border_PinchGesture);
+        RemoveHandler(InputElement.PinchEndedEvent, Border_PinchGestureEnded);
+        RemoveHandler(InputElement.ScrollGestureEvent, Border_ScrollGesture);
+        RemoveHandler(InputElement.ScrollGestureEndedEvent, Border_ScrollGestureEnded);
         
         // Remove touch pad gesture handler
-        Gestures.RemovePointerTouchPadGestureMagnifyHandler(this, Border_Magnified);
+        RemoveHandler(InputElement.PointerTouchPadGestureMagnifyEvent, Border_Magnified);
     }
 
     private void Border_Magnified(object? sender, PointerDeltaEventArgs e)

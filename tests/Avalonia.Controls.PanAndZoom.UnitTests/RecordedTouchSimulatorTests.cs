@@ -323,7 +323,7 @@ public class RecordedTouchSimulatorTests : IDisposable
             var session = simulator.StartRecording(window, outputPath: _testOutputDir);
 
             // Act
-            simulator.RecordedSwipe(window, new Point(100, 150), SwipeDirection.Right, 100);
+            simulator.RecordedSwipe(window, new Point(100, 150), Avalonia.HeadlessTestingFramework.SwipeDirection.Right, 100);
 
             // Assert
             Assert.Contains(session.Events, e => e.EventType == RecordingEventType.Gesture);

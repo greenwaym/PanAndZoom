@@ -593,7 +593,7 @@ public class AppiumApiTests
 
         var action = driver.CreateTouchAction()
             .Press(100, 100)
-            .Swipe(SwipeDirection.Up, 200)
+            .Swipe(Avalonia.HeadlessTestingFramework.SwipeDirection.Up, 200)
             .Release();
 
         Assert.NotNull(action);
@@ -815,6 +815,56 @@ public class AppiumApiTests
         var result = condition(driver);
 
         Assert.True(result);
+    }
+
+    [AvaloniaFact]
+    public void ExpectedConditions_StalenessOf_ReturnsFalse_WhenElementIsAttached()
+    {
+        var panel = new StackPanel { Name = "RootPanel" };
+        var button = new Button { Name = "TrackedButton", Content = "Tracked" };
+        panel.Children.Add(button);
+
+        var window = new Window
+        {
+            Title = "Attached Root",
+            Width = 300,
+            Height = 200,
+            Content = panel
+        };
+        window.Show();
+
+        using var driver = new AvaloniaDriver(panel);
+
+        var element = driver.FindElement(By.Id("TrackedButton"));
+        var isStale = ExpectedConditions.StalenessOf(element)(driver);
+
+        Assert.False(isStale);
+    }
+
+    [AvaloniaFact]
+    public void ExpectedConditions_StalenessOf_ReturnsTrue_WhenElementIsDetached()
+    {
+        var panel = new StackPanel { Name = "RootPanel" };
+        var button = new Button { Name = "TrackedButton", Content = "Tracked" };
+        panel.Children.Add(button);
+
+        var window = new Window
+        {
+            Title = "Detached Root",
+            Width = 300,
+            Height = 200,
+            Content = panel
+        };
+        window.Show();
+
+        using var driver = new AvaloniaDriver(panel);
+
+        var element = driver.FindElement(By.Id("TrackedButton"));
+        panel.Children.Remove(button);
+
+        var isStale = ExpectedConditions.StalenessOf(element)(driver);
+
+        Assert.True(isStale);
     }
 
     #endregion

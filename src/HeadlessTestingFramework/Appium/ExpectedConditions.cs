@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Avalonia.Controls;
 using Avalonia.VisualTree;
 
 namespace Avalonia.HeadlessTestingFramework.Appium;
@@ -595,7 +596,7 @@ public static class ExpectedConditions
             {
                 // Check if element is still attached
                 _ = element.Control.Parent;
-                return element.Control.GetVisualRoot() == null;
+                return element.Control.GetPresentationSource() == null;
             }
             catch
             {

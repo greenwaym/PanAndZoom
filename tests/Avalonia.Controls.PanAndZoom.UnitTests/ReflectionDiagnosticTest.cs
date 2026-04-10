@@ -25,7 +25,7 @@ public class ReflectionDiagnosticTest
         
         // Register handler BEFORE window.Show()
         var pinchEventCount = 0;
-        Gestures.AddPinchHandler(border, (sender, e) => 
+        border.AddHandler(InputElement.PinchEvent, (sender, e) => 
         {
             pinchEventCount++;
         });
@@ -54,7 +54,7 @@ public class ReflectionDiagnosticTest
         
         // Register handler
         var pinchEventCount = 0;
-        Gestures.AddPinchHandler(border, (sender, e) => 
+        border.AddHandler(InputElement.PinchEvent, (sender, e) => 
         {
             pinchEventCount++;
         });
@@ -99,7 +99,7 @@ public class ReflectionDiagnosticTest
         
         // Register handler
         var pinchEventCount = 0;
-        Gestures.AddPinchHandler(zoomBorder, (sender, e) => 
+        zoomBorder.AddHandler(InputElement.PinchEvent, (sender, e) => 
         {
             pinchEventCount++;
         });

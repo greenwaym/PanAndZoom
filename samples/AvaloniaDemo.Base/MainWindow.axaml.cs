@@ -9,8 +9,5 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         this.InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
     }
 }

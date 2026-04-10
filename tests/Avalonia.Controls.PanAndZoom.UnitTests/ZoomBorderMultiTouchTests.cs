@@ -211,7 +211,7 @@ public class ZoomBorderMultiTouchTests
         // Act - Simulate pinch gesture
         var pinchEventArgs = new PinchEventArgs(1.5, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
 
@@ -251,7 +251,7 @@ public class ZoomBorderMultiTouchTests
         // Act - Simulate pinch gesture
         var pinchEventArgs = new PinchEventArgs(1.5, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
 
@@ -292,7 +292,7 @@ public class ZoomBorderMultiTouchTests
         // Act - Simulate pinch gesture
         var pinchEventArgs = new PinchEventArgs(1.5, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
 
@@ -336,7 +336,7 @@ public class ZoomBorderMultiTouchTests
         // Act - Simulate scroll gesture
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(50, 0))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
 
@@ -376,7 +376,7 @@ public class ZoomBorderMultiTouchTests
         // Act - Simulate scroll gesture
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(50, 0))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
 
@@ -417,7 +417,7 @@ public class ZoomBorderMultiTouchTests
         // Act - Simulate scroll gesture
         var scrollEventArgs = new ScrollGestureEventArgs(1, new Vector(50, 0))
         {
-            RoutedEvent = Gestures.ScrollGestureEvent,
+            RoutedEvent = InputElement.ScrollGestureEvent,
             Source = zoomBorder
         };
 
@@ -461,7 +461,7 @@ public class ZoomBorderMultiTouchTests
         // Act - Send first pinch gesture (should be ignored due to delay)
         var pinchEventArgs = new PinchEventArgs(1.5, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
 
@@ -501,7 +501,7 @@ public class ZoomBorderMultiTouchTests
         // Act - Send pinch gesture
         var pinchEventArgs = new PinchEventArgs(1.5, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
 

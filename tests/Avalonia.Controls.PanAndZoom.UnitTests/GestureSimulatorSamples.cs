@@ -65,7 +65,7 @@ public class GestureSimulatorSamples
         
         // Register handlers BEFORE showing window
         var doubleTapCount = 0;
-        zoomBorder.AddHandler(Gestures.DoubleTappedEvent, (s, e) => doubleTapCount++);
+        zoomBorder.AddHandler(InputElement.DoubleTappedEvent, (s, e) => doubleTapCount++);
 
         var window = new Window { Content = zoomBorder };
         window.Show();
@@ -94,7 +94,7 @@ public class GestureSimulatorSamples
         };
         
         var rightTapPosition = default(Point);
-        target.AddHandler(Gestures.RightTappedEvent, (s, e) =>
+        target.AddHandler(InputElement.RightTappedEvent, (s, e) =>
         {
             if (e is TappedEventArgs tapped)
             {
@@ -133,7 +133,7 @@ public class GestureSimulatorSamples
         };
 
         var scales = new List<double>();
-        zoomBorder.AddHandler(Gestures.PinchEvent, (s, e) =>
+        zoomBorder.AddHandler(InputElement.PinchEvent, (s, e) =>
         {
             if (e is PinchEventArgs pinch)
             {
@@ -173,7 +173,7 @@ public class GestureSimulatorSamples
         };
 
         var scales = new List<double>();
-        zoomBorder.AddHandler(Gestures.PinchEvent, (s, e) =>
+        zoomBorder.AddHandler(InputElement.PinchEvent, (s, e) =>
         {
             if (e is PinchEventArgs pinch)
             {
@@ -213,7 +213,7 @@ public class GestureSimulatorSamples
         };
 
         var pinchCount = 0;
-        target.AddHandler(Gestures.PinchEvent, (s, e) => pinchCount++);
+        target.AddHandler(InputElement.PinchEvent, (s, e) => pinchCount++);
 
         var window = new Window { Content = target };
         window.Show();
@@ -251,7 +251,7 @@ public class GestureSimulatorSamples
         var scrollViewer = new ScrollViewer { Content = content };
         
         var scrollDelta = Vector.Zero;
-        scrollViewer.AddHandler(Gestures.ScrollGestureEvent, (s, e) =>
+        scrollViewer.AddHandler(InputElement.ScrollGestureEvent, (s, e) =>
         {
             if (e is ScrollGestureEventArgs scroll)
             {
@@ -286,7 +286,7 @@ public class GestureSimulatorSamples
         };
 
         var scrollEventCount = 0;
-        target.AddHandler(Gestures.ScrollGestureEvent, (s, e) => scrollEventCount++);
+        target.AddHandler(InputElement.ScrollGestureEvent, (s, e) => scrollEventCount++);
 
         var window = new Window { Content = target };
         window.Show();
@@ -294,7 +294,7 @@ public class GestureSimulatorSamples
         var simulator = new GestureSimulator();
 
         // Act - Flick upward
-        simulator.Flick(target, SwipeDirection.Up, distance: 50, velocity: 500);
+        simulator.Flick(target, Avalonia.HeadlessTestingFramework.SwipeDirection.Up, distance: 50, velocity: 500);
 
         // Assert
         Assert.True(scrollEventCount > 0);
@@ -321,7 +321,7 @@ public class GestureSimulatorSamples
         var pullDistance = 0.0;
         var pullEnded = false;
 
-        refreshList.AddHandler(Gestures.PullGestureEvent, (s, e) =>
+        refreshList.AddHandler(InputElement.PullGestureEvent, (s, e) =>
         {
             if (e is PullGestureEventArgs pull)
             {
@@ -329,7 +329,7 @@ public class GestureSimulatorSamples
             }
         });
 
-        refreshList.AddHandler(Gestures.PullGestureEndedEvent, (s, e) =>
+        refreshList.AddHandler(InputElement.PullGestureEndedEvent, (s, e) =>
         {
             pullEnded = true;
             // In real app: trigger data refresh here
@@ -367,7 +367,7 @@ public class GestureSimulatorSamples
         };
 
         var magnifyDelta = 0.0;
-        target.AddHandler(Gestures.PointerTouchPadGestureMagnifyEvent, (s, e) =>
+        target.AddHandler(InputElement.PointerTouchPadGestureMagnifyEvent, (s, e) =>
         {
             if (e is PointerDeltaEventArgs delta)
             {
@@ -403,7 +403,7 @@ public class GestureSimulatorSamples
         };
 
         var swipeCount = 0;
-        navigationHost.AddHandler(Gestures.PointerTouchPadGestureSwipeEvent, (s, e) =>
+        navigationHost.AddHandler(InputElement.PointerTouchPadGestureSwipeEvent, (s, e) =>
         {
             swipeCount++;
             // In real app: navigate between pages
@@ -416,7 +416,7 @@ public class GestureSimulatorSamples
 
         // Act - Swipe left to navigate forward
         simulator.TouchpadSwipeSequence(navigationHost, new Point(200, 150), 
-            SwipeDirection.Left, distance: 100, steps: 5);
+            Avalonia.HeadlessTestingFramework.SwipeDirection.Left, distance: 100, steps: 5);
 
         // Assert
         Assert.True(swipeCount > 0);
@@ -443,8 +443,8 @@ public class GestureSimulatorSamples
         var doubleTapRaised = false;
         var pinchEvents = new List<double>();
 
-        zoomBorder.AddHandler(Gestures.DoubleTappedEvent, (s, e) => doubleTapRaised = true);
-        zoomBorder.AddHandler(Gestures.PinchEvent, (s, e) =>
+        zoomBorder.AddHandler(InputElement.DoubleTappedEvent, (s, e) => doubleTapRaised = true);
+        zoomBorder.AddHandler(InputElement.PinchEvent, (s, e) =>
         {
             if (e is PinchEventArgs pinch)
             {
@@ -480,7 +480,7 @@ public class GestureSimulatorSamples
         };
 
         var holdingStates = new List<HoldingState>();
-        target.AddHandler(Gestures.HoldingEvent, (s, e) =>
+        target.AddHandler(InputElement.HoldingEvent, (s, e) =>
         {
             if (e is HoldingRoutedEventArgs holding)
             {
@@ -529,11 +529,11 @@ public class GestureSimulatorSamples
         // Track all gesture events
         var eventsRaised = new List<string>();
         
-        control.AddHandler(Gestures.PinchEvent, (s, e) => eventsRaised.Add("Pinch"));
-        control.AddHandler(Gestures.PinchEndedEvent, (s, e) => eventsRaised.Add("PinchEnded"));
-        control.AddHandler(Gestures.ScrollGestureEvent, (s, e) => eventsRaised.Add("Scroll"));
-        control.AddHandler(Gestures.ScrollGestureEndedEvent, (s, e) => eventsRaised.Add("ScrollEnded"));
-        control.AddHandler(Gestures.DoubleTappedEvent, (s, e) => eventsRaised.Add("DoubleTap"));
+        control.AddHandler(InputElement.PinchEvent, (s, e) => eventsRaised.Add("Pinch"));
+        control.AddHandler(InputElement.PinchEndedEvent, (s, e) => eventsRaised.Add("PinchEnded"));
+        control.AddHandler(InputElement.ScrollGestureEvent, (s, e) => eventsRaised.Add("Scroll"));
+        control.AddHandler(InputElement.ScrollGestureEndedEvent, (s, e) => eventsRaised.Add("ScrollEnded"));
+        control.AddHandler(InputElement.DoubleTappedEvent, (s, e) => eventsRaised.Add("DoubleTap"));
 
         // Step 1: Zoom in with pinch gesture (typically used for zoom)
         simulator.PinchZoom(control, new Point(200, 150), 1.0, 1.5, steps: 5);

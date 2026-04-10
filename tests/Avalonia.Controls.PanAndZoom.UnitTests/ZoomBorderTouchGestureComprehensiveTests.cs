@@ -977,7 +977,7 @@ public class ZoomBorderTouchGestureComprehensiveTests
         zoomBorder.PointerReleased += (_, _) => released = true;
 
         // Act
-        simulator.Swipe(zoomBorder, new Point(300, 150), SwipeDirection.Left, 100);
+        simulator.Swipe(zoomBorder, new Point(300, 150), Avalonia.HeadlessTestingFramework.SwipeDirection.Left, 100);
 
         // Assert
         Assert.True(pressed);
@@ -998,7 +998,7 @@ public class ZoomBorderTouchGestureComprehensiveTests
         zoomBorder.PointerReleased += (_, _) => released = true;
 
         // Act
-        simulator.Swipe(zoomBorder, new Point(100, 150), SwipeDirection.Right, 100);
+        simulator.Swipe(zoomBorder, new Point(100, 150), Avalonia.HeadlessTestingFramework.SwipeDirection.Right, 100);
 
         // Assert
         Assert.True(pressed);
@@ -1019,7 +1019,7 @@ public class ZoomBorderTouchGestureComprehensiveTests
         zoomBorder.PointerReleased += (_, _) => released = true;
 
         // Act
-        simulator.Swipe(zoomBorder, new Point(200, 250), SwipeDirection.Up, 100);
+        simulator.Swipe(zoomBorder, new Point(200, 250), Avalonia.HeadlessTestingFramework.SwipeDirection.Up, 100);
 
         // Assert
         Assert.True(pressed);
@@ -1040,7 +1040,7 @@ public class ZoomBorderTouchGestureComprehensiveTests
         zoomBorder.PointerReleased += (_, _) => released = true;
 
         // Act
-        simulator.Swipe(zoomBorder, new Point(200, 50), SwipeDirection.Down, 100);
+        simulator.Swipe(zoomBorder, new Point(200, 50), Avalonia.HeadlessTestingFramework.SwipeDirection.Down, 100);
 
         // Assert
         Assert.True(pressed);

@@ -37,7 +37,7 @@ public class ZoomBorderPinchGestureTests
         // Act - Simulate pinch gesture with scale > 1 (zoom in)
         var pinchEventArgs = new PinchEventArgs(1.5, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         
@@ -82,7 +82,7 @@ public class ZoomBorderPinchGestureTests
         // Act - Simulate pinch gesture with scale < 1 (zoom out)
         var pinchEventArgs = new PinchEventArgs(0.8, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         
@@ -123,7 +123,7 @@ public class ZoomBorderPinchGestureTests
         // Act - Simulate pinch gesture at top-left corner
         var pinchEventArgs = new PinchEventArgs(1.5, new Point(0.0, 0.0), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         
@@ -168,7 +168,7 @@ public class ZoomBorderPinchGestureTests
         // Act - Simulate pinch gesture when gesture zoom is disabled
         var pinchEventArgs = new PinchEventArgs(1.5, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         
@@ -200,7 +200,7 @@ public class ZoomBorderPinchGestureTests
         // Act - Simulate pinch gesture without child element
         var pinchEventArgs = new PinchEventArgs(1.5, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         
@@ -238,7 +238,7 @@ public class ZoomBorderPinchGestureTests
         // Act - Simulate pinch gesture ended
         var pinchEndedEventArgs = new PinchEndedEventArgs
         {
-            RoutedEvent = Gestures.PinchEndedEvent,
+            RoutedEvent = InputElement.PinchEndedEvent,
             Source = zoomBorder
         };
         
@@ -277,7 +277,7 @@ public class ZoomBorderPinchGestureTests
         // Act - Simulate multiple pinch gestures
         var pinchEventArgs1 = new PinchEventArgs(1.2, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         
@@ -286,7 +286,7 @@ public class ZoomBorderPinchGestureTests
         
         var pinchEventArgs2 = new PinchEventArgs(1.3, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         
@@ -327,7 +327,7 @@ public class ZoomBorderPinchGestureTests
         // Act - Simulate pinch gesture with scale = 1 (no change)
         var pinchEventArgs = new PinchEventArgs(1.0, new Point(0.5, 0.5), 0.0, 0.0)
         {
-            RoutedEvent = Gestures.PinchEvent,
+            RoutedEvent = InputElement.PinchEvent,
             Source = zoomBorder
         };
         

@@ -26,14 +26,14 @@ namespace Avalonia.HeadlessTestingFramework;
 /// <code>
 /// // CORRECT pattern:
 /// var control = new MyControl();
-/// Gestures.AddPinchHandler(control, handler);  // Register FIRST
+/// control.AddHandler(InputElement.PinchEvent, handler);  // Register FIRST
 /// var window = new Window { Content = control };
 /// window.Show();  // Show AFTER
 /// 
 /// // WRONG pattern (events won't fire):
 /// var window = new Window { Content = control };
 /// window.Show();  // Show FIRST
-/// Gestures.AddPinchHandler(control, handler);  // Too late!
+/// control.AddHandler(InputElement.PinchEvent, handler);  // Too late!
 /// </code>
 /// </example>
 /// </remarks>
@@ -171,7 +171,7 @@ public class GestureRecognizerTestHelper
         {
             // When gesture recognizer has captured, the source should be the recognizer's Target
             var recognizerTarget = (s_gestureRecognizerTargetProperty?.GetValue(capturedRecognizer) as Interactive) ?? source;
-            var root = (target as Visual)?.GetVisualRoot() as Visual ?? (Visual)target;
+            var root = ((Visual)target).GetPresentationSource()?.RootVisual as Visual ?? (Visual)target;
             
             // Transform position from target coordinates to root coordinates
             // The PointerEventArgs expects position in root visual coordinate space
