@@ -50,6 +50,63 @@ public class ZoomBorderGestureToggleTests
         // Assert
         Assert.False(zoomBorder.EnableGestures, "EnableGestures should be false");
     }
+
+    [AvaloniaFact]
+    public void EnableGestures_ToggledOffMidPinch_NextPinchStartsFresh()
+    {
+        // Arrange
+        var zoomBorder = new ZoomBorder
+        {
+            Width = 400,
+            Height = 300,
+            EnableGestures = true,
+            EnableGestureZoom = true
+        };
+
+        var childElement = new Border
+        {
+            Width = 200,
+            Height = 150,
+            Background = Brushes.Red
+        };
+
+        zoomBorder.Child = childElement;
+
+        var window = new Window { Content = zoomBorder };
+        window.Show();
+
+        var firstPinchEventArgs = new PinchEventArgs(2.0, new Point(200, 150), 0.0, 0.0)
+        {
+            RoutedEvent = InputElement.PinchEvent,
+            Source = zoomBorder
+        };
+
+        zoomBorder.RaiseEvent(firstPinchEventArgs);
+        var zoomAfterFirstPinch = zoomBorder.ZoomX;
+
+        zoomBorder.EnableGestures = false;
+
+        var pinchEndedEventArgs = new PinchEndedEventArgs
+        {
+            RoutedEvent = InputElement.PinchEndedEvent,
+            Source = zoomBorder
+        };
+
+        zoomBorder.RaiseEvent(pinchEndedEventArgs);
+        zoomBorder.EnableGestures = true;
+
+        var secondPinchEventArgs = new PinchEventArgs(1.5, new Point(200, 150), 0.0, 0.0)
+        {
+            RoutedEvent = InputElement.PinchEvent,
+            Source = zoomBorder
+        };
+
+        zoomBorder.RaiseEvent(secondPinchEventArgs);
+
+        // Assert
+        Assert.True(zoomBorder.ZoomX > zoomAfterFirstPinch,
+            $"A fresh pinch should continue zooming in after gestures are re-enabled. Previous: {zoomAfterFirstPinch}, Current: {zoomBorder.ZoomX}");
+    }
     
     [AvaloniaFact]
     public void EnableGestureZoom_False_PinchGestureIgnored()
