@@ -105,13 +105,15 @@ public class ZoomBorderTouchGestureComprehensiveTests
         var zoomBorder = CreateZoomBorder();
         ShowInWindow(zoomBorder);
         var simulator = new TouchInputSimulator();
+        var pinchCenter = new Point(200, 150);
         
         var zoomHistory = new List<double> { zoomBorder.ZoomX };
 
         // Act - Multiple zoom in gestures
         for (int i = 0; i < 5; i++)
         {
-            simulator.PinchGesture(zoomBorder, 1.2, new Point(0.5, 0.5));
+            simulator.PinchGesture(zoomBorder, 1.2, pinchCenter);
+            simulator.PinchGestureEnded(zoomBorder);
             zoomHistory.Add(zoomBorder.ZoomX);
         }
 
@@ -130,19 +132,24 @@ public class ZoomBorderTouchGestureComprehensiveTests
         var zoomBorder = CreateZoomBorder();
         ShowInWindow(zoomBorder);
         var simulator = new TouchInputSimulator();
+        var topLeft = new Point(50, 50);
+        var center = new Point(200, 150);
+        var bottomRight = new Point(350, 250);
         
         // First zoom at top-left
-        simulator.PinchGesture(zoomBorder, 1.5, new Point(0.0, 0.0));
+        simulator.PinchGesture(zoomBorder, 1.5, topLeft);
         var offsetAfterTopLeft = (zoomBorder.OffsetX, zoomBorder.OffsetY);
+        simulator.PinchGestureEnded(zoomBorder);
         zoomBorder.ResetMatrix();
         
         // Then zoom at center
-        simulator.PinchGesture(zoomBorder, 1.5, new Point(0.5, 0.5));
+        simulator.PinchGesture(zoomBorder, 1.5, center);
         var offsetAfterCenter = (zoomBorder.OffsetX, zoomBorder.OffsetY);
+        simulator.PinchGestureEnded(zoomBorder);
         zoomBorder.ResetMatrix();
         
         // Then zoom at bottom-right
-        simulator.PinchGesture(zoomBorder, 1.5, new Point(1.0, 1.0));
+        simulator.PinchGesture(zoomBorder, 1.5, bottomRight);
         var offsetAfterBottomRight = (zoomBorder.OffsetX, zoomBorder.OffsetY);
 
         // Assert - Different origins should produce different offsets

@@ -152,6 +152,8 @@ public partial class ZoomBorder : Border
         }
         else if (!EnableGestures && _gestureRecognizersAdded)
         {
+            ResetPinchGestureState();
+
             // Since GestureRecognizerCollection doesn't support Remove/Clear,
             // we need to recreate the recognizers to effectively "remove" them
             _pinchGestureRecognizer = new PinchGestureRecognizer();
@@ -163,6 +165,15 @@ public partial class ZoomBorder : Border
             
             _gestureRecognizersAdded = false;
         }
+    }
+
+    private void ResetPinchGestureState()
+    {
+        _gestureRecognized = false;
+        _gestureStartTime = default;
+        _simultaneousGestureActive = false;
+        _pinchActive = false;
+        _lastPinchScale = 1.0;
     }
 
     /// <summary>
@@ -368,19 +379,12 @@ public partial class ZoomBorder : Border
 
     private void Border_PinchGestureEnded(object? sender, PinchEndedEventArgs e)
     {
+        ResetPinchGestureState();
+
         if (!EnableGestures)
             return;
 
         Log($"[PinchGestureEnded] {Name}");
-
-        // Reset gesture tracking state
-        _gestureRecognized = false;
-        _gestureStartTime = default;
-        _simultaneousGestureActive = false;
-
-        // Raise GestureEnded event
-        _pinchActive = false;
-        _lastPinchScale = 1.0;
 
         var gestureArgs = new GestureEventArgs(
             "Pinch",
