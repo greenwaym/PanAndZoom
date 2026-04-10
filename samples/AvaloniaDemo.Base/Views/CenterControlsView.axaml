@@ -19,7 +19,7 @@
       <Separator Margin="0,8" />
 
       <TextBlock Text="Center on Point with Zoom:" FontWeight="SemiBold" />
-      <TextBox x:Name="CenterZoomBox" Text="2.0" Watermark="Zoom level..." />
+      <TextBox x:Name="CenterZoomBox" Text="2.0" PlaceholderText="Zoom level..." />
       <Button Content="Center Point 1 @ Zoom" Click="CenterPointZoom_Click" />
 
       <Separator Margin="0,8" />

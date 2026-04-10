@@ -66,7 +66,7 @@ public class VisualTreeTestHelperTests
             {
                 Children =
                 {
-                    new TextBox { Name = "Input1", Text = "Enter text", Watermark = "Type here" },
+                    new TextBox { Name = "Input1", Text = "Enter text", PlaceholderText = "Type here" },
                     new CheckBox { Name = "Check1", Content = "Accept Terms", IsChecked = true },
                     new ComboBox
                     {
