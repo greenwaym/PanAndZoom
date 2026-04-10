@@ -100,13 +100,16 @@ public class ZoomBorderZoomToRectangleTests
         var rect = new Rect(50, 100, 200, 150);
         
         // Expected calculations:
+        // Layout offset: Border always centers its child, so layoutOffset = ((600-800)/2, (400-600)/2) = (-100, -100)
         // zoom = min(600/200, 400/150) = min(3, 2.667) = 2.667
         // rectCenterX = 50 + 100 = 150
         // rectCenterY = 100 + 75 = 175
         // viewportCenterX = 300
         // viewportCenterY = 200
-        // offsetX = 300 - 150 * 2.667 = 300 - 400 = -100
-        // offsetY = 200 - 175 * 2.667 = 200 - 466.67 = -266.67
+        // The visual position formula is: visualPos = layoutOffset + matrixOffset + contentPoint * zoom
+        // So: matrixOffset = viewportCenter - layoutOffset - contentPoint * zoom
+        // offsetX = 300 - (-100) - 150 * 2.667 = 400 - 400 = 0
+        // offsetY = 200 - (-100) - 175 * 2.667 = 300 - 466.67 = -166.67
 
         // Act
         zoomBorder.ZoomToRectangle(rect);
@@ -115,16 +118,23 @@ public class ZoomBorderZoomToRectangleTests
         var expectedZoom = Math.Min(600.0 / 200.0, 400.0 / 150.0);
         var rectCenterX = rect.X + rect.Width / 2.0;
         var rectCenterY = rect.Y + rect.Height / 2.0;
-        var expectedOffsetX = 300.0 - rectCenterX * expectedZoom;
-        var expectedOffsetY = 200.0 - rectCenterY * expectedZoom;
+        
+        // Layout offset where Avalonia centers the child within the ZoomBorder
+        var layoutOffsetX = (600.0 - 800.0) / 2.0;  // -100
+        var layoutOffsetY = (400.0 - 600.0) / 2.0;  // -100
+        
+        // Matrix offset = viewportCenter - layoutOffset - contentCenter * zoom
+        var expectedOffsetX = 300.0 - layoutOffsetX - rectCenterX * expectedZoom;
+        var expectedOffsetY = 200.0 - layoutOffsetY - rectCenterY * expectedZoom;
 
         Assert.Equal(expectedZoom, zoomBorder.ZoomX, 2);
         Assert.Equal(expectedOffsetX, zoomBorder.OffsetX, 2);
         Assert.Equal(expectedOffsetY, zoomBorder.OffsetY, 2);
         
         // Verify that the rectangle center point transforms to viewport center
-        var transformedCenterX = rectCenterX * zoomBorder.ZoomX + zoomBorder.OffsetX;
-        var transformedCenterY = rectCenterY * zoomBorder.ZoomY + zoomBorder.OffsetY;
+        // Visual position = layoutOffset + matrixOffset + contentPoint * zoom
+        var transformedCenterX = layoutOffsetX + rectCenterX * zoomBorder.ZoomX + zoomBorder.OffsetX;
+        var transformedCenterY = layoutOffsetY + rectCenterY * zoomBorder.ZoomY + zoomBorder.OffsetY;
         
         Assert.Equal(300.0, transformedCenterX, 1);
         Assert.Equal(200.0, transformedCenterY, 1);
