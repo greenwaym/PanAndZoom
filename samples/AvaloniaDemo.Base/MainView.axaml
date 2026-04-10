@@ -201,7 +201,7 @@
                             EnableGestures="True"
                             Background="SlateBlue" ClipToBounds="True" Focusable="True"
                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-              <Border Background="Gray" BorderBrush="Yellow" BorderThickness="10">
+              <Border Background="Gray" BorderBrush="Yellow" BorderThickness="10" Width="400" Height="400">
                 <Border.Transitions>
                   <Transitions>
                     <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
