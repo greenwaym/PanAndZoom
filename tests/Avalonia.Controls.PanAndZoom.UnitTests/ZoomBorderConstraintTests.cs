@@ -932,4 +932,83 @@ public class ZoomBorderConstraintTests
         // Final zoom should be at max
         Assert.Equal(2.0, zoomBorder.ZoomX, 4);
     }
+
+    [AvaloniaFact]
+    public void Zoom_WhenConstrainsDisabled_IgnoresZoomLimits()
+    {
+        // Arrange - Zoom limits are set, but EnableConstrains is false,
+        // so the Zoom() method should NOT clamp the value.
+        var zoomBorder = new ZoomBorder
+        {
+            Width = 400,
+            Height = 300,
+            EnableZoom = true,
+            MaxZoomX = 2.0,
+            MaxZoomY = 2.0,
+            MinZoomX = 0.5,
+            MinZoomY = 0.5,
+            EnableConstrains = false,
+            Stretch = StretchMode.None
+        };
+
+        var childElement = new Border
+        {
+            Width = 200,
+            Height = 150,
+            Background = Brushes.Red
+        };
+
+        zoomBorder.Child = childElement;
+
+        var window = new Window { Content = zoomBorder };
+        window.Show();
+
+        // Act - Zoom to 3.0, which exceeds MaxZoom but constraints are disabled
+        zoomBorder.Zoom(3.0, 100.0, 75.0, skipTransitions: true);
+
+        // Assert - Should reach 3.0 since constraints are disabled
+        Assert.Equal(3.0, zoomBorder.ZoomX, 4);
+        Assert.Equal(3.0, zoomBorder.ZoomY, 4);
+    }
+
+    [AvaloniaFact]
+    public void ZoomTo_WhenConstrainsDisabled_IgnoresZoomLimits()
+    {
+        // Arrange - Zoom limits are set, but EnableConstrains is false,
+        // so the ZoomTo() method should NOT clamp the ratio.
+        var zoomBorder = new ZoomBorder
+        {
+            Width = 400,
+            Height = 300,
+            EnableZoom = true,
+            MaxZoomX = 2.0,
+            MaxZoomY = 2.0,
+            MinZoomX = 0.5,
+            MinZoomY = 0.5,
+            EnableConstrains = false,
+            Stretch = StretchMode.None
+        };
+
+        var childElement = new Border
+        {
+            Width = 200,
+            Height = 150,
+            Background = Brushes.Red
+        };
+
+        zoomBorder.Child = childElement;
+
+        var window = new Window { Content = zoomBorder };
+        window.Show();
+
+        // Set initial zoom to 1.5
+        zoomBorder.Zoom(1.5, 100.0, 75.0, skipTransitions: true);
+
+        // Act - ZoomTo with ratio 3.0 (would go to 4.5, exceeds max but constraints disabled)
+        zoomBorder.ZoomTo(3.0, 100.0, 75.0, skipTransitions: true);
+
+        // Assert - Should reach 4.5 since constraints are disabled
+        Assert.Equal(4.5, zoomBorder.ZoomX, 4);
+        Assert.Equal(4.5, zoomBorder.ZoomY, 4);
+    }
 }

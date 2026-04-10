@@ -2187,10 +2187,14 @@ public partial class ZoomBorder : Border
         }
 
         // Clamp zoom to effective limits before applying to prevent translation jump
-        GetEffectiveZoomLimits(out var effectiveMinZoomX, out var effectiveMaxZoomX, out var effectiveMinZoomY, out var effectiveMaxZoomY);
-        var effectiveMinZoom = Math.Max(effectiveMinZoomX, effectiveMinZoomY);
-        var effectiveMaxZoom = Math.Min(effectiveMaxZoomX, effectiveMaxZoomY);
-        var clampedZoom = Math.Max(effectiveMinZoom, Math.Min(zoom, effectiveMaxZoom));
+        var clampedZoom = zoom;
+        if (EnableConstrains)
+        {
+            GetEffectiveZoomLimits(out var effectiveMinZoomX, out var effectiveMaxZoomX, out var effectiveMinZoomY, out var effectiveMaxZoomY);
+            var effectiveMinZoom = Math.Max(effectiveMinZoomX, effectiveMinZoomY);
+            var effectiveMaxZoom = Math.Min(effectiveMaxZoomX, effectiveMaxZoomY);
+            clampedZoom = Math.Max(effectiveMinZoom, Math.Min(zoom, effectiveMaxZoom));
+        }
 
         _updating = true;
 
@@ -2236,34 +2240,37 @@ public partial class ZoomBorder : Border
         }
 
         // Use effective zoom limits that consider auto-calculated bounds
-        GetEffectiveZoomLimits(out var effectiveMinZoomX, out var effectiveMaxZoomX, out var effectiveMinZoomY, out var effectiveMaxZoomY);
-        
-        if ((ZoomX >= effectiveMaxZoomX && ZoomY >= effectiveMaxZoomY && ratio > 1) || 
-            (ZoomX <= effectiveMinZoomX && ZoomY <= effectiveMinZoomY && ratio < 1))
-        {
-            return;
-        }
-
-        // Calculate clamped ratio to prevent exceeding limits and causing translation jump
         var effectiveRatio = ratio;
-        
-        if (ratio > 1) // Zooming in
+
+        if (EnableConstrains)
         {
-            var maxRatioX = effectiveMaxZoomX / ZoomX;
-            var maxRatioY = effectiveMaxZoomY / ZoomY;
-            effectiveRatio = Math.Min(ratio, Math.Min(maxRatioX, maxRatioY));
-        }
-        else if (ratio < 1) // Zooming out
-        {
-            var minRatioX = effectiveMinZoomX / ZoomX;
-            var minRatioY = effectiveMinZoomY / ZoomY;
-            effectiveRatio = Math.Max(ratio, Math.Max(minRatioX, minRatioY));
-        }
-        
-        // Don't proceed if effective ratio is essentially 1 (no zoom change)
-        if (Math.Abs(effectiveRatio - 1.0) < 1e-10)
-        {
-            return;
+            GetEffectiveZoomLimits(out var effectiveMinZoomX, out var effectiveMaxZoomX, out var effectiveMinZoomY, out var effectiveMaxZoomY);
+
+            if ((ZoomX >= effectiveMaxZoomX && ZoomY >= effectiveMaxZoomY && ratio > 1) ||
+                (ZoomX <= effectiveMinZoomX && ZoomY <= effectiveMinZoomY && ratio < 1))
+            {
+                return;
+            }
+
+            // Calculate clamped ratio to prevent exceeding limits and causing translation jump
+            if (ratio > 1) // Zooming in
+            {
+                var maxRatioX = effectiveMaxZoomX / ZoomX;
+                var maxRatioY = effectiveMaxZoomY / ZoomY;
+                effectiveRatio = Math.Min(ratio, Math.Min(maxRatioX, maxRatioY));
+            }
+            else if (ratio < 1) // Zooming out
+            {
+                var minRatioX = effectiveMinZoomX / ZoomX;
+                var minRatioY = effectiveMinZoomY / ZoomY;
+                effectiveRatio = Math.Max(ratio, Math.Max(minRatioX, minRatioY));
+            }
+
+            // Don't proceed if effective ratio is essentially 1 (no zoom change)
+            if (Math.Abs(effectiveRatio - 1.0) < 1e-10)
+            {
+                return;
+            }
         }
 
         _updating = true;
